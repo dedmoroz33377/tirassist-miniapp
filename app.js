@@ -505,8 +505,8 @@ class TirAssistApp {
   openAddModal() {
     // Pre-fill coordinates from map center
     const center = this.map.getCenter();
-    this._addCoords = { lat: center.lat, lon: center.lng };
-    this._updateCoordsDisplay();
+    document.getElementById('add-lat').value = center.lat.toFixed(6);
+    document.getElementById('add-lon').value = center.lng.toFixed(6);
     document.getElementById('add-modal').classList.remove('hidden');
   }
 
@@ -515,23 +515,22 @@ class TirAssistApp {
     this._resetAddForm();
   }
 
-  _updateCoordsDisplay() {
-    const el = document.getElementById('add-coords-display');
-    if (this._addCoords) {
-      el.textContent = `${this._addCoords.lat.toFixed(5)}, ${this._addCoords.lon.toFixed(5)}`;
-    }
+  _fillCoords(lat, lon) {
+    document.getElementById('add-lat').value = lat.toFixed(6);
+    document.getElementById('add-lon').value = lon.toFixed(6);
   }
 
   _resetAddForm() {
     document.getElementById('add-name').value = '';
     document.getElementById('add-address').value = '';
     document.getElementById('add-spots').value = '';
+    document.getElementById('add-lat').value = '';
+    document.getElementById('add-lon').value = '';
     document.getElementById('add-paid').checked = false;
     document.querySelectorAll('.service-check').forEach(el => {
       el.classList.remove('checked');
       el.querySelector('input').checked = false;
     });
-    this._addCoords = null;
   }
 
   _initAddParking() {
@@ -551,11 +550,16 @@ class TirAssistApp {
     // Use my location
     document.getElementById('add-use-location-btn').addEventListener('click', () => {
       if (this.userPosition) {
-        this._addCoords = { lat: this.userPosition.lat, lon: this.userPosition.lon };
-        this._updateCoordsDisplay();
+        this._fillCoords(this.userPosition.lat, this.userPosition.lon);
       } else {
         alert('Геолокация недоступна. Разрешите доступ к местоположению.');
       }
+    });
+
+    // Use map center
+    document.getElementById('add-use-center-btn').addEventListener('click', () => {
+      const center = this.map.getCenter();
+      this._fillCoords(center.lat, center.lng);
     });
 
     // Submit
@@ -570,8 +574,12 @@ class TirAssistApp {
       alert('Введите название парковки.');
       return;
     }
-    if (!this._addCoords) {
-      alert('Координаты не определены.');
+
+    const lat = parseFloat(document.getElementById('add-lat').value);
+    const lon = parseFloat(document.getElementById('add-lon').value);
+
+    if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+      alert('Введите корректные координаты.\nШирота: -90 до 90\nДолгота: -180 до 180');
       return;
     }
 
@@ -582,8 +590,8 @@ class TirAssistApp {
     const data = {
       type:     'new_parking',
       name,
-      lat:      this._addCoords.lat,
-      lon:      this._addCoords.lon,
+      lat,
+      lon,
       address:  document.getElementById('add-address').value.trim() || null,
       spots:    parseInt(document.getElementById('add-spots').value) || null,
       services,

@@ -111,9 +111,15 @@
         </div>
         <div class="form-group">
           <label>📍 Координаты</label>
-          <p id="add-coords-display" class="coords-display">Используется центр карты</p>
+          <div class="coords-inputs">
+            <input type="number" id="add-lat" placeholder="Широта (напр. 52.2156)" step="any">
+            <input type="number" id="add-lon" placeholder="Долгота (напр. 20.7834)" step="any">
+          </div>
           <button id="add-use-location-btn" class="secondary-btn" style="margin-top:8px">
-            Использовать моё местоположение
+            📍 Вставить моё местоположение
+          </button>
+          <button id="add-use-center-btn" class="secondary-btn" style="margin-top:6px">
+            🗺️ Вставить центр карты
           </button>
         </div>
         <button id="add-submit-btn" class="primary-btn" style="margin-top:8px">
