@@ -127,15 +127,9 @@ html, body {
 
 #top-actions {
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  justify-content: space-between;
-}
-
-#locate-btn {
-  position: fixed;
-  bottom: 90px;
-  right: 60px;
-  z-index: 1000;
+  align-items: flex-end;
 }
 
 .action-btn {
