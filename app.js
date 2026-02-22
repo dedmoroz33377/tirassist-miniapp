@@ -435,6 +435,15 @@ class TirAssistApp {
       document.getElementById('route-btn')?.classList.remove('active');
     });
 
+    document.addEventListener('click', (e) => {
+      if (!panel.classList.contains('hidden') &&
+          !panel.contains(e.target) &&
+          e.target !== btn) {
+        panel.classList.add('hidden');
+        btn.classList.remove('active');
+      }
+    });
+
     document.querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
         const f = chip.dataset.filter;

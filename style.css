@@ -163,7 +163,7 @@ html, body {
 /* ─── FLOATING PANELS ─────────────────────────── */
 .floating-panel {
   position: fixed;
-  top: 152px;
+  top: 290px;
   left: 10px;
   right: 10px;
   z-index: 1001;
