@@ -16,6 +16,10 @@ const TILE_LAYERS = {
       subdomains: 'abcd',
       maxZoom: 19,
     },
+    overlay: {
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
+      options: { attribution: '', maxZoom: 19, opacity: 0.8 },
+    },
   },
   satellite: {
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
