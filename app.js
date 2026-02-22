@@ -28,17 +28,18 @@ const TILE_LAYERS = {
 
 class TirAssistApp {
   constructor() {
-    this.map           = null;
-    this.clusterGroup  = null;
-    this.allParkings   = [];
-    this.markerMap     = new Map();   // parking.id → L.marker
-    this.userPosition  = null;
-    this.userMarker    = null;
-    this.activeFilters = new Set();
-    this.routeLayer    = null;
-    this.routeActive   = false;
-    this.currentLayer  = 'dark';
-    this.tileLayer     = null;
+    this.map                = null;
+    this.clusterGroup       = null;
+    this.allParkings        = [];
+    this.markerMap          = new Map();   // parking.id → L.marker
+    this.userPosition       = null;
+    this.userMarker         = null;
+    this.activeFilters      = new Set();
+    this.routeLayer         = null;
+    this.routeActive        = false;
+    this.currentLayer       = 'dark';
+    this.tileLayer          = null;
+    this._userLocationLabel = '📍 Моё местоположение';
   }
 
   // ─── ENTRY POINT ────────────────────────────────────────────
@@ -239,6 +240,13 @@ class TirAssistApp {
         ).addTo(this.map);
 
         this.map.setView([this.userPosition.lat, this.userPosition.lon], 10);
+
+        // Auto-fill "From" field with sentinel (only if user hasn't typed anything)
+        const fromInput = document.getElementById('route-from');
+        if (!fromInput.value || fromInput.value === this._userLocationLabel) {
+          this._userLocationLabel = '📍 Моё местоположение';
+          fromInput.value = this._userLocationLabel;
+        }
       },
       (err) => console.warn('Geolocation denied:', err),
       { enableHighAccuracy: true, timeout: 10000 },
@@ -270,21 +278,31 @@ class TirAssistApp {
 
   // ─── ROUTE MODE ─────────────────────────────────────────────
   async buildRoute(fromQ, toQ) {
-    let fromR, toR;
+    let from, to;
+
+    // Resolve "from"
+    if (fromQ === this._userLocationLabel && this.userPosition) {
+      from = { lat: this.userPosition.lat, lon: this.userPosition.lon };
+    } else {
+      try {
+        const fromR = await this.geocode(fromQ);
+        if (!fromR.length) { alert('Адрес отправления не найден.'); return; }
+        from = { lat: +fromR[0].lat, lon: +fromR[0].lon };
+      } catch {
+        alert('Ошибка геокодирования. Проверьте интернет-соединение.');
+        return;
+      }
+    }
+
+    // Resolve "to"
     try {
-      [fromR, toR] = await Promise.all([this.geocode(fromQ), this.geocode(toQ)]);
+      const toR = await this.geocode(toQ);
+      if (!toR.length) { alert('Адрес назначения не найден. Уточните запрос.'); return; }
+      to = { lat: +toR[0].lat, lon: +toR[0].lon };
     } catch {
       alert('Ошибка геокодирования. Проверьте интернет-соединение.');
       return;
     }
-
-    if (!fromR.length || !toR.length) {
-      alert('Адрес не найден. Уточните запрос.');
-      return;
-    }
-
-    const from = { lat: +fromR[0].lat, lon: +fromR[0].lon };
-    const to   = { lat: +toR[0].lat,   lon: +toR[0].lon };
 
     // Get route from OSRM (open-source, free)
     let routePoints = [[from.lat, from.lon], [to.lat, to.lon]];
@@ -337,8 +355,9 @@ class TirAssistApp {
     this.routeActive = false;
     this.renderMarkers(this.allParkings);
     document.getElementById('route-clear-btn').classList.add('hidden');
-    document.getElementById('route-from').value = '';
-    document.getElementById('route-to').value   = '';
+    document.getElementById('route-from').value =
+      this.userPosition ? (this._userLocationLabel || '📍 Моё местоположение') : '';
+    document.getElementById('route-to').value = '';
   }
 
   // ─── MATH ───────────────────────────────────────────────────
@@ -378,51 +397,11 @@ class TirAssistApp {
 
   // ─── UI WIRING ──────────────────────────────────────────────
   initUI() {
-    this._initSearch();
     this._initFilters();
     this._initRoute();
     this._initLocate();
     this._initLayerToggle();
     this._initAddParking();
-  }
-
-  _initSearch() {
-    const input   = document.getElementById('search-input');
-    const clear   = document.getElementById('search-clear');
-    const results = document.getElementById('search-results');
-    let debounce;
-
-    input.addEventListener('input', () => {
-      const q = input.value.trim();
-      clear.classList.toggle('hidden', !q);
-      clearTimeout(debounce);
-      results.innerHTML = '';
-      if (q.length < 2) return;
-
-      debounce = setTimeout(async () => {
-        try {
-          const data = await this.geocode(q);
-          results.innerHTML = data.slice(0, 5).map(r => `
-            <div class="search-result-item" data-lat="${r.lat}" data-lon="${r.lon}">
-              ${r.display_name}
-            </div>`).join('');
-
-          results.querySelectorAll('.search-result-item').forEach(el => {
-            el.addEventListener('click', () => {
-              this.map.setView([+el.dataset.lat, +el.dataset.lon], 12);
-              results.innerHTML = '';
-              input.value = el.textContent.trim().split(',')[0];
-            });
-          });
-        } catch { /* network error – silently ignore */ }
-      }, 450);
-    });
-
-    clear.addEventListener('click', () => {
-      input.value     = '';
-      results.innerHTML = '';
-      clear.classList.add('hidden');
-    });
   }
 
   _initFilters() {
@@ -460,28 +439,21 @@ class TirAssistApp {
   }
 
   _initRoute() {
-    const btn   = document.getElementById('route-btn');
-    const panel = document.getElementById('route-panel');
-
-    btn.addEventListener('click', () => {
-      const open = !panel.classList.contains('hidden');
-      panel.classList.toggle('hidden', open);
-      btn.classList.toggle('active', !open);
-      // Close filter panel
-      document.getElementById('filter-panel').classList.add('hidden');
-      document.getElementById('filter-btn').classList.remove('active');
-    });
-
     document.getElementById('route-go-btn').addEventListener('click', async () => {
       const from = document.getElementById('route-from').value.trim();
       const to   = document.getElementById('route-to').value.trim();
       if (!from || !to) {
-        alert('Введите начало и конец маршрута.');
+        alert('Введите пункт назначения.');
         return;
       }
-      panel.classList.add('hidden');
-      btn.classList.remove('active');
+      // Close filter panel if open
+      document.getElementById('filter-panel').classList.add('hidden');
+      document.getElementById('filter-btn').classList.remove('active');
       await this.buildRoute(from, to);
+    });
+
+    document.getElementById('route-to').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('route-go-btn').click();
     });
 
     document.getElementById('route-clear-btn').addEventListener('click', () => {

@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 
@@ -16,21 +16,25 @@
 
   <!-- Top Bar -->
   <div id="top-bar">
-    <div id="search-wrapper">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="search-input" placeholder="Город или адрес..." autocomplete="off">
-      <button id="search-clear" class="hidden">✕</button>
+    <div id="route-inline">
+      <div class="route-inline-row">
+        <span class="route-dot green"></span>
+        <input type="text" id="route-from" placeholder="Откуда" autocomplete="off">
+      </div>
+      <div class="route-inline-divider"></div>
+      <div class="route-inline-row">
+        <span class="route-dot red"></span>
+        <input type="text" id="route-to" placeholder="Куда" autocomplete="off">
+        <button id="route-go-btn" class="route-go-btn" title="Найти парковки">→</button>
+      </div>
+      <button id="route-clear-btn" class="route-clear-btn hidden">✕ Очистить маршрут</button>
     </div>
     <div id="top-actions">
       <button id="layer-btn" class="action-btn" title="Спутник">🛰️</button>
-      <button id="route-btn" class="action-btn" title="Маршрут">🗺️</button>
       <button id="filter-btn" class="action-btn" title="Фильтры">⚙️</button>
       <button id="locate-btn" class="action-btn" title="Моё местоположение">📍</button>
     </div>
   </div>
-
-  <!-- Search Results -->
-  <div id="search-results"></div>
 
   <!-- Filter Panel -->
   <div id="filter-panel" class="floating-panel hidden">
@@ -44,24 +48,6 @@
       <button class="chip" data-filter="electricity">⚡ Электричество</button>
     </div>
     <button id="filter-clear" class="secondary-btn">Сбросить все</button>
-  </div>
-
-  <!-- Route Panel -->
-  <div id="route-panel" class="floating-panel hidden">
-    <div class="panel-title">Маршрут</div>
-    <div class="route-inputs">
-      <div class="route-input-row">
-        <span class="route-dot green"></span>
-        <input type="text" id="route-from" placeholder="Откуда" autocomplete="off">
-      </div>
-      <div class="route-divider"></div>
-      <div class="route-input-row">
-        <span class="route-dot red"></span>
-        <input type="text" id="route-to" placeholder="Куда" autocomplete="off">
-      </div>
-    </div>
-    <button id="route-go-btn" class="primary-btn">Найти парковки на маршруте</button>
-    <button id="route-clear-btn" class="secondary-btn hidden">Очистить маршрут</button>
   </div>
 
   <!-- Add Parking FAB -->
@@ -152,6 +138,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>
