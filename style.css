@@ -723,6 +723,32 @@ html, body {
 }
 
 
+/* ─── TOAST ────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 16px;
+  right: 16px;
+  z-index: 3000;
+  background: #3a2e00;
+  border: 1px solid #f59e0b;
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #fcd34d;
+  box-shadow: var(--shadow);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* ─── UTILITY ─────────────────────────────────── */
 .hidden {
   display: none !important;

@@ -361,6 +361,7 @@ class TirAssistApp {
 
     // Fallback: OSRM (no vehicle restrictions)
     if (!routedByORS) {
+      this.showToast('⚠️ Маршрут без учёта габаритов — сервис ограничений временно недоступен');
       try {
         const osrm = await fetch(
           `https://router.project-osrm.org/route/v1/driving/${from.lon},${from.lat};${to.lon},${to.lat}?overview=full&geometries=geojson`,
@@ -459,6 +460,19 @@ class TirAssistApp {
     this._initLocate();
     this._initLayerToggle();
     this._initAddParking();
+  }
+
+  // ─── TOAST NOTIFICATION ─────────────────────────────────────
+  showToast(message, duration = 4000) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.remove('hidden');
+    requestAnimationFrame(() => toast.classList.add('show'));
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.classList.add('hidden'), 300);
+    }, duration);
   }
 
   // ─── VEHICLE DIMENSIONS ─────────────────────────────────────
