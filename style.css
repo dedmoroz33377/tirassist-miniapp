@@ -660,11 +660,6 @@ html, body {
   transform: translateX(22px);
 }
 
-.coords-inputs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
 
 /* ─── UTILITY ─────────────────────────────────── */
 .hidden {

@@ -503,10 +503,8 @@ class TirAssistApp {
 
   // ─── ADD PARKING FORM ───────────────────────────────────────
   openAddModal() {
-    // Pre-fill coordinates from map center
     const center = this.map.getCenter();
-    document.getElementById('add-lat').value = center.lat.toFixed(6);
-    document.getElementById('add-lon').value = center.lng.toFixed(6);
+    document.getElementById('add-coords').value = `${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}`;
     document.getElementById('add-modal').classList.remove('hidden');
   }
 
@@ -516,16 +514,14 @@ class TirAssistApp {
   }
 
   _fillCoords(lat, lon) {
-    document.getElementById('add-lat').value = lat.toFixed(6);
-    document.getElementById('add-lon').value = lon.toFixed(6);
+    document.getElementById('add-coords').value = `${lat.toFixed(6)}, ${lon.toFixed(6)}`;
   }
 
   _resetAddForm() {
     document.getElementById('add-name').value = '';
     document.getElementById('add-address').value = '';
     document.getElementById('add-spots').value = '';
-    document.getElementById('add-lat').value = '';
-    document.getElementById('add-lon').value = '';
+    document.getElementById('add-coords').value = '';
     document.getElementById('add-paid').checked = false;
     document.querySelectorAll('.service-check').forEach(el => {
       el.classList.remove('checked');
@@ -575,11 +571,13 @@ class TirAssistApp {
       return;
     }
 
-    const lat = parseFloat(document.getElementById('add-lat').value);
-    const lon = parseFloat(document.getElementById('add-lon').value);
+    const coordsRaw = document.getElementById('add-coords').value.trim();
+    const parts = coordsRaw.split(/[\s,;]+/);
+    const lat = parseFloat(parts[0]);
+    const lon = parseFloat(parts[1]);
 
     if (isNaN(lat) || isNaN(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-      alert('Введите корректные координаты.\nШирота: -90 до 90\nДолгота: -180 до 180');
+      alert('Введите координаты в формате:\n52.2156, 20.7834');
       return;
     }
 
