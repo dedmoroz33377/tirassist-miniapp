@@ -518,8 +518,10 @@ html, body {
   border-radius: 20px 20px 0 0;
   max-height: 88vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   padding-bottom: max(env(safe-area-inset-bottom), 16px);
+  pointer-events: auto;
 }
 
 #add-modal-header {
@@ -580,6 +582,12 @@ html, body {
 .form-group input[type="text"]::placeholder,
 .form-group input[type="number"]::placeholder {
   color: var(--tg-theme-hint-color, var(--text-muted));
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus {
+  border-color: var(--tg-theme-button-color, #2196F3);
+  outline: none;
 }
 
 .services-grid {
