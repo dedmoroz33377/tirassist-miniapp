@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -36,18 +36,34 @@
     </div>
   </div>
 
-  <!-- Filter Panel -->
+  <!-- Filter / Dims Panel -->
   <div id="filter-panel" class="floating-panel hidden">
-    <div class="panel-title">Фильтры</div>
-    <div class="filter-chips">
-      <button class="chip" data-filter="free">🆓 Бесплатно</button>
-      <button class="chip" data-filter="shower">🚿 Душ</button>
-      <button class="chip" data-filter="toilet">🚽 Туалет</button>
-      <button class="chip" data-filter="security">🔒 Охрана</button>
-      <button class="chip" data-filter="restaurant">☕ Ресторан</button>
-      <button class="chip" data-filter="electricity">⚡ Электричество</button>
+    <div id="panel-tabs">
+      <button class="panel-tab active" data-tab="filters">Фильтры</button>
+      <button class="panel-tab" data-tab="dims">Габариты</button>
     </div>
-    <button id="filter-clear" class="secondary-btn">Сбросить все</button>
+
+    <div id="pane-filters">
+      <div class="filter-chips">
+        <button class="chip" data-filter="free">🆓 Бесплатно</button>
+        <button class="chip" data-filter="shower">🚿 Душ</button>
+        <button class="chip" data-filter="toilet">🚽 Туалет</button>
+        <button class="chip" data-filter="security">🔒 Охрана</button>
+        <button class="chip" data-filter="restaurant">☕ Ресторан</button>
+        <button class="chip" data-filter="electricity">⚡ Электричество</button>
+      </div>
+      <button id="filter-clear" class="secondary-btn">Сбросить все</button>
+    </div>
+
+    <div id="pane-dims" class="hidden">
+      <div class="dims-grid">
+        <label class="dims-label">Высота (м)<input id="dim-height" type="number" step="0.1" min="0" class="dims-input"></label>
+        <label class="dims-label">Ширина (м)<input id="dim-width" type="number" step="0.1" min="0" class="dims-input"></label>
+        <label class="dims-label">Длина (м)<input id="dim-length" type="number" step="0.1" min="0" class="dims-input"></label>
+        <label class="dims-label">Вес (т)<input id="dim-weight" type="number" step="1" min="0" class="dims-input"></label>
+      </div>
+      <button id="dims-save" class="primary-btn">Сохранить</button>
+    </div>
   </div>
 
   <!-- Add Parking FAB -->
@@ -129,6 +145,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
-  <script src="app.js?v=6"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

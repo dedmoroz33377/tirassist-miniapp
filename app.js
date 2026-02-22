@@ -322,18 +322,56 @@ class TirAssistApp {
       return;
     }
 
-    // Get route from OSRM (open-source, free)
+    // Get route from ORS (HGV profile with vehicle restrictions)
+    const ORS_KEY = 'eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijk0NWUxNTJmNDMwMTQyM2VhMjJiMmI4ZWY2OThlNDNkIiwiaCI6Im11cm11cjY0In0=';
+    const dims = this.getVehicleDims();
     let routePoints = [[from.lat, from.lon], [to.lat, to.lon]];
+    let routedByORS = false;
     try {
-      const osrm = await fetch(
-        `https://router.project-osrm.org/route/v1/driving/${from.lon},${from.lat};${to.lon},${to.lat}?overview=full&geometries=geojson`,
+      const orsBody = {
+        coordinates: [[from.lon, from.lat], [to.lon, to.lat]],
+        options: {
+          vehicle_type: 'hgv',
+          profile_params: {
+            restrictions: {
+              height: dims.height,
+              width:  dims.width,
+              length: dims.length,
+              weight: dims.weight,
+            },
+          },
+        },
+      };
+      const ors = await fetch(
+        'https://api.openrouteservice.org/v2/directions/driving-hgv/geojson',
+        {
+          method: 'POST',
+          headers: { 'Authorization': ORS_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify(orsBody),
+        }
       );
-      const data = await osrm.json();
-      if (data.routes?.[0]?.geometry?.coordinates) {
-        routePoints = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+      const orsData = await ors.json();
+      if (orsData.features?.[0]?.geometry?.coordinates) {
+        routePoints = orsData.features[0].geometry.coordinates.map(c => [c[1], c[0]]);
+        routedByORS = true;
       }
     } catch {
-      console.warn('OSRM unavailable, using straight line');
+      console.warn('ORS unavailable, falling back to OSRM');
+    }
+
+    // Fallback: OSRM (no vehicle restrictions)
+    if (!routedByORS) {
+      try {
+        const osrm = await fetch(
+          `https://router.project-osrm.org/route/v1/driving/${from.lon},${from.lat};${to.lon},${to.lat}?overview=full&geometries=geojson`,
+        );
+        const data = await osrm.json();
+        if (data.routes?.[0]?.geometry?.coordinates) {
+          routePoints = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+        }
+      } catch {
+        console.warn('OSRM unavailable, using straight line');
+      }
     }
 
     // Draw polyline
@@ -416,10 +454,54 @@ class TirAssistApp {
   // ─── UI WIRING ──────────────────────────────────────────────
   initUI() {
     this._initFilters();
+    this._initDims();
     this._initRoute();
     this._initLocate();
     this._initLayerToggle();
     this._initAddParking();
+  }
+
+  // ─── VEHICLE DIMENSIONS ─────────────────────────────────────
+  _defaultDims() {
+    return { height: 4, width: 2.5, length: 16.5, weight: 40 };
+  }
+
+  getVehicleDims() {
+    const raw = localStorage.getItem('vehicleDims');
+    return raw ? JSON.parse(raw) : this._defaultDims();
+  }
+
+  _initDims() {
+    const defaults = this.getVehicleDims();
+    document.getElementById('dim-height').value = defaults.height;
+    document.getElementById('dim-width').value  = defaults.width;
+    document.getElementById('dim-length').value = defaults.length;
+    document.getElementById('dim-weight').value = defaults.weight;
+
+    // Tab switching
+    document.querySelectorAll('.panel-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const target = tab.dataset.tab;
+        document.getElementById('pane-filters').classList.toggle('hidden', target !== 'filters');
+        document.getElementById('pane-dims').classList.toggle('hidden', target !== 'dims');
+      });
+    });
+
+    // Save dims
+    document.getElementById('dims-save').addEventListener('click', () => {
+      const dims = {
+        height: parseFloat(document.getElementById('dim-height').value) || this._defaultDims().height,
+        width:  parseFloat(document.getElementById('dim-width').value)  || this._defaultDims().width,
+        length: parseFloat(document.getElementById('dim-length').value) || this._defaultDims().length,
+        weight: parseFloat(document.getElementById('dim-weight').value) || this._defaultDims().weight,
+      };
+      localStorage.setItem('vehicleDims', JSON.stringify(dims));
+      const btn = document.getElementById('dims-save');
+      btn.textContent = 'Сохранено ✅';
+      setTimeout(() => { btn.textContent = 'Сохранить'; }, 1500);
+    });
   }
 
   _initFilters() {
