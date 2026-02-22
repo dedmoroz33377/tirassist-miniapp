@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>TirAssist — Парковки</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="map"></div>
+
+  <!-- Top Bar -->
+  <div id="top-bar">
+    <div id="search-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Город или адрес..." autocomplete="off">
+      <button id="search-clear" class="hidden">✕</button>
+    </div>
+    <div id="top-actions">
+      <button id="layer-btn" class="action-btn" title="Спутник">🛰️</button>
+      <button id="route-btn" class="action-btn" title="Маршрут">🗺️</button>
+      <button id="filter-btn" class="action-btn" title="Фильтры">⚙️</button>
+      <button id="locate-btn" class="action-btn" title="Моё местоположение">📍</button>
+    </div>
+  </div>
+
+  <!-- Search Results -->
+  <div id="search-results"></div>
+
+  <!-- Filter Panel -->
+  <div id="filter-panel" class="floating-panel hidden">
+    <div class="panel-title">Фильтры</div>
+    <div class="filter-chips">
+      <button class="chip" data-filter="free">🆓 Бесплатно</button>
+      <button class="chip" data-filter="shower">🚿 Душ</button>
+      <button class="chip" data-filter="toilet">🚽 Туалет</button>
+      <button class="chip" data-filter="security">🔒 Охрана</button>
+      <button class="chip" data-filter="restaurant">☕ Ресторан</button>
+      <button class="chip" data-filter="electricity">⚡ Электричество</button>
+    </div>
+    <button id="filter-clear" class="secondary-btn">Сбросить все</button>
+  </div>
+
+  <!-- Route Panel -->
+  <div id="route-panel" class="floating-panel hidden">
+    <div class="panel-title">Маршрут</div>
+    <div class="route-inputs">
+      <div class="route-input-row">
+        <span class="route-dot green"></span>
+        <input type="text" id="route-from" placeholder="Откуда" autocomplete="off">
+      </div>
+      <div class="route-divider"></div>
+      <div class="route-input-row">
+        <span class="route-dot red"></span>
+        <input type="text" id="route-to" placeholder="Куда" autocomplete="off">
+      </div>
+    </div>
+    <button id="route-go-btn" class="primary-btn">Найти парковки на маршруте</button>
+    <button id="route-clear-btn" class="secondary-btn hidden">Очистить маршрут</button>
+  </div>
+
+  <!-- Bottom Sheet -->
+  <div id="bottom-sheet" class="hidden">
+    <div id="sheet-drag-handle" onclick="app.hidePanel()">
+      <div id="sheet-handle"></div>
+    </div>
+    <div id="sheet-content">
+      <div id="sheet-header">
+        <h2 id="parking-name"></h2>
+        <span id="parking-distance" class="distance-badge hidden"></span>
+      </div>
+      <p id="parking-address"></p>
+      <div id="parking-meta">
+        <span id="parking-spots"></span>
+        <span id="parking-rating"></span>
+      </div>
+      <div id="services-row"></div>
+      <button id="maps-btn" class="primary-btn maps-btn">
+        🗺️ Открыть в Google Maps
+      </button>
+    </div>
+  </div>
+
+  <!-- JS Libraries -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

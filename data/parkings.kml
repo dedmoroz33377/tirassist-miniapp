@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>TirAssist Truck Parkings</name>
+
+    <Placemark>
+      <name>MOP Konotopa</name>
+      <ExtendedData>
+        <Data name="address"><value>Autostrada A2, km 450, Konotopa, Polska</value></Data>
+        <Data name="spots"><value>85</value></Data>
+        <Data name="services"><value>toilet,restaurant</value></Data>
+        <Data name="paid"><value>false</value></Data>
+        <Data name="rating"><value>3.5</value></Data>
+      </ExtendedData>
+      <Point><coordinates>20.7834,52.2156,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Truck Stop Rzepin</name>
+      <ExtendedData>
+        <Data name="address"><value>ul. Portowa 12, Rzepin, Polska (A2)</value></Data>
+        <Data name="spots"><value>120</value></Data>
+        <Data name="services"><value>shower,toilet,security,restaurant,electricity</value></Data>
+        <Data name="paid"><value>true</value></Data>
+        <Data name="rating"><value>4.2</value></Data>
+      </ExtendedData>
+      <Point><coordinates>14.8156,52.3478,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Autohof Königs Wusterhausen</name>
+      <ExtendedData>
+        <Data name="address"><value>Zossener Str. 55, 15711 Königs Wusterhausen, Deutschland</value></Data>
+        <Data name="spots"><value>200</value></Data>
+        <Data name="services"><value>shower,toilet,security,restaurant,electricity</value></Data>
+        <Data name="paid"><value>false</value></Data>
+        <Data name="rating"><value>4.0</value></Data>
+      </ExtendedData>
+      <Point><coordinates>13.6312,52.2923,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>MOP Gogolin</name>
+      <ExtendedData>
+        <Data name="address"><value>Autostrada A4, km 171, Gogolin, Polska</value></Data>
+        <Data name="spots"><value>60</value></Data>
+        <Data name="services"><value>toilet</value></Data>
+        <Data name="paid"><value>false</value></Data>
+        <Data name="rating"><value>2.8</value></Data>
+      </ExtendedData>
+      <Point><coordinates>18.0234,50.4956,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Truck Parking Mysłowice</name>
+      <ExtendedData>
+        <Data name="address"><value>ul. Fabryczna 8, Mysłowice, Polska</value></Data>
+        <Data name="spots"><value>95</value></Data>
+        <Data name="services"><value>shower,toilet,security,restaurant</value></Data>
+        <Data name="paid"><value>true</value></Data>
+        <Data name="rating"><value>4.1</value></Data>
+      </ExtendedData>
+      <Point><coordinates>19.1423,50.2234,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>MOP Szarów</name>
+      <ExtendedData>
+        <Data name="address"><value>Autostrada A4, km 403, Szarów, Polska</value></Data>
+        <Data name="spots"><value>40</value></Data>
+        <Data name="services"><value>toilet</value></Data>
+        <Data name="paid"><value>false</value></Data>
+        <Data name="rating"><value>3.0</value></Data>
+      </ExtendedData>
+      <Point><coordinates>20.1534,50.0678,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Parking TIR Wrocław Bielany</name>
+      <ExtendedData>
+        <Data name="address"><value>ul. Magnolii 25, Bielany Wrocławskie, Polska</value></Data>
+        <Data name="spots"><value>150</value></Data>
+        <Data name="services"><value>shower,toilet,security,restaurant,electricity</value></Data>
+        <Data name="paid"><value>true</value></Data>
+        <Data name="rating"><value>4.5</value></Data>
+      </ExtendedData>
+      <Point><coordinates>16.9823,51.0956,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Rastanlage Bautzen West</name>
+      <ExtendedData>
+        <Data name="address"><value>A4, Bautzen, Sachsen, Deutschland</value></Data>
+        <Data name="spots"><value>80</value></Data>
+        <Data name="services"><value>toilet,restaurant</value></Data>
+        <Data name="paid"><value>false</value></Data>
+        <Data name="rating"><value>3.3</value></Data>
+      </ExtendedData>
+      <Point><coordinates>14.4123,51.2134,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Autohof Forst Lausitz</name>
+      <ExtendedData>
+        <Data name="address"><value>Gubener Str. 10, 03149 Forst, Deutschland (A15)</value></Data>
+        <Data name="spots"><value>110</value></Data>
+        <Data name="services"><value>shower,toilet,security,restaurant,electricity</value></Data>
+        <Data name="paid"><value>false</value></Data>
+        <Data name="rating"><value>4.3</value></Data>
+      </ExtendedData>
+      <Point><coordinates>14.6345,51.7423,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>MOP Mszana Dolna</name>
+      <ExtendedData>
+        <Data name="address"><value>Autostrada A1, km 490, Mszana, Polska</value></Data>
+        <Data name="spots"><value>55</value></Data>
+        <Data name="services"><value>toilet,shower</value></Data>
+        <Data name="paid"><value>false</value></Data>
+        <Data name="rating"><value>3.7</value></Data>
+      </ExtendedData>
+      <Point><coordinates>18.7823,50.0234,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Parking TIR Poznań Wschód</name>
+      <ExtendedData>
+        <Data name="address"><value>ul. Warszawska 156, Poznań, Polska</value></Data>
+        <Data name="spots"><value>70</value></Data>
+        <Data name="services"><value>shower,toilet,security</value></Data>
+        <Data name="paid"><value>true</value></Data>
+        <Data name="rating"><value>3.9</value></Data>
+      </ExtendedData>
+      <Point><coordinates>17.0823,52.4234,0</coordinates></Point>
+    </Placemark>
+
+    <Placemark>
+      <name>Rastanlage Gräfenhausen West</name>
+      <ExtendedData>
+        <Data name="address"><value>A5, Gräfenhausen, Hessen, Deutschland</value></Data>
+        <Data name="spots"><value>320</value></Data>
+        <Data name="services"><value>shower,toilet,restaurant,electricity</value></Data>
+        <Data name="paid"><value>false</value></Data>
+        <Data name="rating"><value>3.1</value></Data>
+      </ExtendedData>
+      <Point><coordinates>8.5823,49.8734,0</coordinates></Point>
+    </Placemark>
+
+  </Document>
+</kml>
