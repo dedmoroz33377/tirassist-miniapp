@@ -128,20 +128,13 @@ html, body {
 #top-actions {
   display: flex;
   gap: 8px;
-  justify-content: flex-end;
-}
-
-#layer-btn {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 1000;
+  justify-content: space-between;
 }
 
 #locate-btn {
   position: fixed;
-  bottom: 24px;
-  right: 16px;
+  bottom: 90px;
+  right: 60px;
   z-index: 1000;
 }
 
