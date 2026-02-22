@@ -331,7 +331,7 @@ html, body {
 #parking-coords-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   margin-bottom: 12px;
 }
 
@@ -339,23 +339,28 @@ html, body {
   font-size: 13px;
   color: var(--tg-theme-hint-color, var(--text-muted));
   font-family: monospace;
-  flex: 1;
 }
 
 .copy-btn {
-  background: var(--tg-theme-secondary-bg-color, #2a2a42);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 5px 9px;
+  background: rgba(79, 195, 247, 0.15);
+  border: 1px solid rgba(79, 195, 247, 0.4);
+  border-radius: var(--radius);
+  padding: 6px 10px;
   font-size: 15px;
   cursor: pointer;
-  color: inherit;
+  color: var(--primary);
   flex-shrink: 0;
-  transition: opacity 0.15s;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.copy-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
 }
 
 .copy-btn:active {
   opacity: 0.65;
+  transform: scale(0.98);
 }
 
 #parking-meta {
