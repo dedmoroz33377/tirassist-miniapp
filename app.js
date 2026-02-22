@@ -23,6 +23,14 @@ const TILE_LAYERS = {
       attribution: '© <a href="https://www.esri.com/">Esri</a>',
       maxZoom: 19,
     },
+    overlay: {
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
+      options: {
+        attribution: '',
+        maxZoom: 19,
+        opacity: 1,
+      },
+    },
   },
 };
 
@@ -39,6 +47,7 @@ class TirAssistApp {
     this.routeActive        = false;
     this.currentLayer       = 'dark';
     this.tileLayer          = null;
+    this.overlayLayer       = null;
     this._userLocationLabel = '📍 Моё местоположение';
   }
 
@@ -443,9 +452,22 @@ class TirAssistApp {
   toggleLayer() {
     this.currentLayer = this.currentLayer === 'dark' ? 'satellite' : 'dark';
     const cfg = TILE_LAYERS[this.currentLayer];
+
+    // Remove existing layers
     this.map.removeLayer(this.tileLayer);
+    if (this.overlayLayer) {
+      this.map.removeLayer(this.overlayLayer);
+      this.overlayLayer = null;
+    }
+
+    // Add base tile layer
     this.tileLayer = L.tileLayer(cfg.url, cfg.options).addTo(this.map);
     this.tileLayer.bringToBack();
+
+    // Add road labels overlay for satellite (hybrid mode)
+    if (cfg.overlay) {
+      this.overlayLayer = L.tileLayer(cfg.overlay.url, cfg.overlay.options).addTo(this.map);
+    }
 
     const btn = document.getElementById('layer-btn');
     btn.textContent = this.currentLayer === 'dark' ? '🛰️' : '🗺';
