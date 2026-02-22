@@ -158,9 +158,6 @@ class TirAssistApp {
     // Name
     document.getElementById('parking-name').textContent = parking.name;
 
-    // Address
-    document.getElementById('parking-address').textContent = parking.address || '—';
-
     // Distance badge
     const distEl = document.getElementById('parking-distance');
     if (this.userPosition) {
@@ -176,13 +173,34 @@ class TirAssistApp {
       distEl.classList.add('hidden');
     }
 
-    // Meta
-    const spotsEl = document.getElementById('parking-spots');
-    spotsEl.textContent = parking.spots ? `${parking.spots} мест` : 'Мест: н/д';
+    // Coordinates row
+    const coordsRow = document.getElementById('parking-coords-row');
+    const coordsText = `${parking.lat.toFixed(6)}, ${parking.lon.toFixed(6)}`;
+    document.getElementById('parking-coords').textContent = coordsText;
+    coordsRow.classList.remove('hidden');
+    document.getElementById('parking-coords-copy').onclick = () => {
+      navigator.clipboard.writeText(coordsText).then(() => {
+        const btn = document.getElementById('parking-coords-copy');
+        btn.textContent = '✅';
+        setTimeout(() => { btn.textContent = '📋'; }, 1500);
+      }).catch(() => {
+        // Fallback for environments without clipboard API
+        const ta = document.createElement('textarea');
+        ta.value = coordsText;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const btn = document.getElementById('parking-coords-copy');
+        btn.textContent = '✅';
+        setTimeout(() => { btn.textContent = '📋'; }, 1500);
+      });
+    };
 
+    // Rating
     const ratingEl = document.getElementById('parking-rating');
     if (parking.rating) {
-      ratingEl.textContent = `${parking.rating}`;
+      ratingEl.textContent = `⭐ ${parking.rating}`;
       ratingEl.style.display = '';
     } else {
       ratingEl.style.display = 'none';
@@ -463,7 +481,11 @@ class TirAssistApp {
 
   _initLocate() {
     document.getElementById('locate-btn').addEventListener('click', () => {
-      this.getUserLocation();
+      if (this.userPosition) {
+        this.map.setView([this.userPosition.lat, this.userPosition.lon], 14);
+      } else {
+        this.getUserLocation();
+      }
     });
   }
 
@@ -491,8 +513,6 @@ class TirAssistApp {
 
   _resetAddForm() {
     document.getElementById('add-name').value = '';
-    document.getElementById('add-address').value = '';
-    document.getElementById('add-spots').value = '';
     document.getElementById('add-coords').value = '';
     document.getElementById('add-paid').checked = false;
     document.querySelectorAll('.service-check').forEach(el => {
@@ -522,12 +542,6 @@ class TirAssistApp {
       } else {
         alert('Геолокация недоступна. Разрешите доступ к местоположению.');
       }
-    });
-
-    // Use map center
-    document.getElementById('add-use-center-btn').addEventListener('click', () => {
-      const center = this.map.getCenter();
-      this._fillCoords(center.lat, center.lng);
     });
 
     // Submit
@@ -562,8 +576,6 @@ class TirAssistApp {
       name,
       lat,
       lon,
-      address:  document.getElementById('add-address').value.trim() || null,
-      spots:    parseInt(document.getElementById('add-spots').value) || null,
       services,
       paid:     document.getElementById('add-paid').checked,
     };

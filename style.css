@@ -328,11 +328,34 @@ html, body {
   margin-top: 3px;
 }
 
-#parking-address {
+#parking-coords-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+#parking-coords {
   font-size: 13px;
   color: var(--tg-theme-hint-color, var(--text-muted));
-  margin-bottom: 12px;
-  line-height: 1.4;
+  font-family: monospace;
+  flex: 1;
+}
+
+.copy-btn {
+  background: var(--tg-theme-secondary-bg-color, #2a2a42);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 15px;
+  cursor: pointer;
+  color: inherit;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+
+.copy-btn:active {
+  opacity: 0.65;
 }
 
 #parking-meta {
@@ -343,8 +366,7 @@ html, body {
   color: var(--tg-theme-text-color, var(--text));
 }
 
-#parking-spots::before { content: "🚛 "; }
-#parking-rating::before { content: "⭐ "; }
+#parking-rating::before { content: ""; }
 
 #services-row {
   display: flex;

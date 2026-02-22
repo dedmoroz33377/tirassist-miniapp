@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 
@@ -67,14 +67,6 @@
           <input type="text" id="add-name" placeholder="Например: Truck Stop A4">
         </div>
         <div class="form-group">
-          <label>Адрес</label>
-          <input type="text" id="add-address" placeholder="Улица, город, страна">
-        </div>
-        <div class="form-group">
-          <label>Количество мест для TIR</label>
-          <input type="number" id="add-spots" placeholder="Например: 50" min="1" max="9999">
-        </div>
-        <div class="form-group">
           <label>Сервисы</label>
           <div class="services-grid">
             <label class="service-check"><input type="checkbox" value="shower"> 🚿 Душ</label>
@@ -101,9 +93,6 @@
           <button id="add-use-location-btn" class="secondary-btn" style="margin-top:8px">
             📍 Вставить моё местоположение
           </button>
-          <button id="add-use-center-btn" class="secondary-btn" style="margin-top:6px">
-            🗺️ Вставить центр карты
-          </button>
         </div>
         <button id="add-submit-btn" class="primary-btn" style="margin-top:8px">
           Отправить на модерацию
@@ -122,9 +111,11 @@
         <h2 id="parking-name"></h2>
         <span id="parking-distance" class="distance-badge hidden"></span>
       </div>
-      <p id="parking-address"></p>
+      <div id="parking-coords-row" class="hidden">
+        <span id="parking-coords"></span>
+        <button id="parking-coords-copy" class="copy-btn" title="Скопировать координаты">📋</button>
+      </div>
       <div id="parking-meta">
-        <span id="parking-spots"></span>
         <span id="parking-rating"></span>
       </div>
       <div id="services-row"></div>
@@ -138,6 +129,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
