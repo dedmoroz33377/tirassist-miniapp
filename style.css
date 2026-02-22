@@ -238,24 +238,77 @@ html, body {
   color: var(--tg-theme-text-color, var(--text));
 }
 
+/* ─── FILTER SECTIONS ─────────────────────────── */
+#pane-filters {
+  overflow-y: auto;
+  max-height: 55vh;
+}
+
+.filter-section {
+  margin-bottom: 14px;
+}
+
+.filter-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tg-theme-hint-color, var(--text-muted));
+  margin-bottom: 8px;
+}
+
+.payment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.payment-row .filter-section-title {
+  margin-bottom: 0;
+}
+
+.payment-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pay-label {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color, var(--text-muted));
+}
+
+.pay-slider {
+  background: #22c55e !important;
+}
+
+.toggle-switch input:not(:checked) + .pay-slider {
+  background: var(--tg-theme-secondary-bg-color, #2a2a42) !important;
+  border: 1px solid var(--border);
+}
+
 /* ─── FILTER CHIPS ────────────────────────────── */
 .filter-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 0;
 }
 
 .chip {
   background: var(--tg-theme-secondary-bg-color, #2a2a42);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 8px 14px;
+  padding: 7px 12px;
   font-size: 13px;
   cursor: pointer;
   color: var(--tg-theme-text-color, var(--text));
+  display: flex;
+  align-items: center;
+  gap: 2px;
   transition: background 0.15s, border-color 0.15s;
-  min-height: 38px;
+  min-height: 36px;
 }
 
 .chip.active {

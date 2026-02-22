@@ -47,6 +47,8 @@ class TirAssistApp {
     this.userPosition       = null;
     this.userMarker         = null;
     this.activeFilters      = new Set();
+    this.activeType         = null;
+    this.filterPaid         = null;
     this.routeLayer         = null;
     this.routeActive        = false;
     this.currentLayer       = 'dark';
@@ -124,6 +126,7 @@ class TirAssistApp {
             name:    p.name    || 'Парковка',
             address: p.address || '',
             spots:   p.spots   ? parseInt(p.spots, 10) : null,
+            type:    p.type    || '',
             services,
             paid:    p.paid === 'true',
             rating:  p.rating  ? parseFloat(p.rating)  : null,
@@ -286,14 +289,16 @@ class TirAssistApp {
 
   // ─── FILTERS ────────────────────────────────────────────────
   applyFilters() {
-    if (this.activeFilters.size === 0) {
+    const hasFilter = this.activeFilters.size > 0 || this.activeType || this.filterPaid !== null;
+    if (!hasFilter) {
       this.renderMarkers(this.allParkings);
       return;
     }
     const filtered = this.allParkings.filter(p => {
+      if (this.activeType && p.type !== this.activeType) return false;
+      if (this.filterPaid !== null && p.paid !== this.filterPaid) return false;
       for (const f of this.activeFilters) {
-        if (f === 'free' && p.paid)             return false;
-        if (f !== 'free' && !p.services.includes(f)) return false;
+        if (!p.services.includes(f)) return false;
       }
       return true;
     });
@@ -566,7 +571,8 @@ class TirAssistApp {
       }
     });
 
-    document.querySelectorAll('.chip').forEach(chip => {
+    // Service chips (amenities + security) — multi-select
+    document.querySelectorAll('.chip:not(.type-chip)').forEach(chip => {
       chip.addEventListener('click', () => {
         const f = chip.dataset.filter;
         if (this.activeFilters.has(f)) {
@@ -580,9 +586,35 @@ class TirAssistApp {
       });
     });
 
+    // Type chips — single select (toggle off if clicked again)
+    document.querySelectorAll('.type-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const t = chip.dataset.type;
+        if (this.activeType === t) {
+          this.activeType = null;
+          chip.classList.remove('active');
+        } else {
+          this.activeType = t;
+          document.querySelectorAll('.type-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+        }
+        this.applyFilters();
+      });
+    });
+
+    // Payment toggle
+    document.getElementById('filter-paid-toggle').addEventListener('change', (e) => {
+      this.filterPaid = e.target.checked ? true : null;
+      this.applyFilters();
+    });
+
+    // Reset all
     document.getElementById('filter-clear').addEventListener('click', () => {
       this.activeFilters.clear();
+      this.activeType  = null;
+      this.filterPaid  = null;
       document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      document.getElementById('filter-paid-toggle').checked = false;
       this.renderMarkers(this.allParkings);
     });
   }

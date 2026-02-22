@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 
@@ -44,15 +44,59 @@
     </div>
 
     <div id="pane-filters">
-      <div class="filter-chips">
-        <button class="chip" data-filter="free">🆓 Бесплатно</button>
-        <button class="chip" data-filter="shower">🚿 Душ</button>
-        <button class="chip" data-filter="toilet">🚽 Туалет</button>
-        <button class="chip" data-filter="security">🔒 Охрана</button>
-        <button class="chip" data-filter="restaurant">☕ Ресторан</button>
-        <button class="chip" data-filter="electricity">⚡ Электричество</button>
+
+      <!-- Вид парковки -->
+      <div class="filter-section">
+        <div class="filter-section-title">Вид парковки</div>
+        <div class="filter-chips">
+          <button class="chip type-chip" data-type="стоянка">🅿️ Стоянка</button>
+          <button class="chip type-chip" data-type="spot">
+            <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:3px">
+              <rect x="1" y="1" width="22" height="22" rx="4" fill="white" stroke="#aaa" stroke-width="1.5"/>
+              <text x="12" y="13.5" font-family="Arial,sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">P</text>
+              <text x="12" y="19.5" font-family="Arial,sans-serif" font-size="4.5" font-weight="bold" text-anchor="middle" fill="#333">SPOT</text>
+            </svg>Spot
+          </button>
+          <button class="chip type-chip" data-type="prom">🏭 Prom</button>
+          <button class="chip type-chip" data-type="autohof">🏢 Autohof</button>
+        </div>
       </div>
-      <button id="filter-clear" class="secondary-btn">Сбросить все</button>
+
+      <!-- Удобства -->
+      <div class="filter-section">
+        <div class="filter-section-title">Удобства</div>
+        <div class="filter-chips">
+          <button class="chip" data-filter="toilet">🚽 Туалет</button>
+          <button class="chip" data-filter="shower">🚿 Душ</button>
+          <button class="chip" data-filter="restaurant">☕ Кафе</button>
+          <button class="chip" data-filter="laundry">👕 Прачечная</button>
+          <button class="chip" data-filter="shop">🛒 Магазин</button>
+        </div>
+      </div>
+
+      <!-- Безопасность -->
+      <div class="filter-section">
+        <div class="filter-section-title">Безопасность</div>
+        <div class="filter-chips">
+          <button class="chip" data-filter="lighting">💡 Освещение</button>
+          <button class="chip" data-filter="fencing">🚧 Ограждение</button>
+        </div>
+      </div>
+
+      <!-- Оплата -->
+      <div class="filter-section payment-row">
+        <span class="filter-section-title">Оплата</span>
+        <div class="payment-toggle">
+          <span class="pay-label">Бесплатно</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="filter-paid-toggle">
+            <span class="toggle-slider pay-slider"></span>
+          </label>
+          <span class="pay-label">Платно</span>
+        </div>
+      </div>
+
+      <button id="filter-clear" class="secondary-btn">Сбросить всё</button>
     </div>
 
     <div id="pane-dims" class="hidden">
@@ -148,6 +192,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
-  <script src="app.js?v=10"></script>
+  <script src="app.js?v=11"></script>
 </body>
 </html>
