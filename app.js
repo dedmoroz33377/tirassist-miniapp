@@ -383,6 +383,7 @@ class TirAssistApp {
     this._initRoute();
     this._initLocate();
     this._initLayerToggle();
+    this._initAddParking();
   }
 
   _initSearch() {
@@ -498,6 +499,104 @@ class TirAssistApp {
     document.getElementById('layer-btn').addEventListener('click', () => {
       this.toggleLayer();
     });
+  }
+
+  // ─── ADD PARKING FORM ───────────────────────────────────────
+  openAddModal() {
+    // Pre-fill coordinates from map center
+    const center = this.map.getCenter();
+    this._addCoords = { lat: center.lat, lon: center.lng };
+    this._updateCoordsDisplay();
+    document.getElementById('add-modal').classList.remove('hidden');
+  }
+
+  closeAddModal() {
+    document.getElementById('add-modal').classList.add('hidden');
+    this._resetAddForm();
+  }
+
+  _updateCoordsDisplay() {
+    const el = document.getElementById('add-coords-display');
+    if (this._addCoords) {
+      el.textContent = `${this._addCoords.lat.toFixed(5)}, ${this._addCoords.lon.toFixed(5)}`;
+    }
+  }
+
+  _resetAddForm() {
+    document.getElementById('add-name').value = '';
+    document.getElementById('add-address').value = '';
+    document.getElementById('add-spots').value = '';
+    document.getElementById('add-paid').checked = false;
+    document.querySelectorAll('.service-check').forEach(el => {
+      el.classList.remove('checked');
+      el.querySelector('input').checked = false;
+    });
+    this._addCoords = null;
+  }
+
+  _initAddParking() {
+    document.getElementById('add-parking-btn').addEventListener('click', () => {
+      this.openAddModal();
+    });
+
+    // Service chip toggle
+    document.querySelectorAll('.service-check').forEach(label => {
+      label.addEventListener('click', () => {
+        const cb = label.querySelector('input');
+        cb.checked = !cb.checked;
+        label.classList.toggle('checked', cb.checked);
+      });
+    });
+
+    // Use my location
+    document.getElementById('add-use-location-btn').addEventListener('click', () => {
+      if (this.userPosition) {
+        this._addCoords = { lat: this.userPosition.lat, lon: this.userPosition.lon };
+        this._updateCoordsDisplay();
+      } else {
+        alert('Геолокация недоступна. Разрешите доступ к местоположению.');
+      }
+    });
+
+    // Submit
+    document.getElementById('add-submit-btn').addEventListener('click', () => {
+      this._submitParking();
+    });
+  }
+
+  _submitParking() {
+    const name = document.getElementById('add-name').value.trim();
+    if (!name) {
+      alert('Введите название парковки.');
+      return;
+    }
+    if (!this._addCoords) {
+      alert('Координаты не определены.');
+      return;
+    }
+
+    const services = Array.from(document.querySelectorAll('.service-check input:checked'))
+      .map(cb => cb.value)
+      .join(',');
+
+    const data = {
+      type:     'new_parking',
+      name,
+      lat:      this._addCoords.lat,
+      lon:      this._addCoords.lon,
+      address:  document.getElementById('add-address').value.trim() || null,
+      spots:    parseInt(document.getElementById('add-spots').value) || null,
+      services,
+      paid:     document.getElementById('add-paid').checked,
+    };
+
+    if (window.Telegram?.WebApp?.sendData) {
+      window.Telegram.WebApp.sendData(JSON.stringify(data));
+    } else {
+      // Dev fallback — show data in alert
+      alert('sendData (dev):\n' + JSON.stringify(data, null, 2));
+      this.closeAddModal();
+    }
   }
 }
 

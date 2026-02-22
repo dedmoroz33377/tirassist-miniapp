@@ -64,6 +64,65 @@
     <button id="route-clear-btn" class="secondary-btn hidden">Очистить маршрут</button>
   </div>
 
+  <!-- Add Parking FAB -->
+  <button id="add-parking-btn" title="Добавить парковку">＋</button>
+
+  <!-- Add Parking Modal -->
+  <div id="add-modal" class="hidden">
+    <div id="add-modal-overlay" onclick="app.closeAddModal()"></div>
+    <div id="add-modal-content">
+      <div id="add-modal-header">
+        <h3>Добавить парковку</h3>
+        <button id="add-modal-close" onclick="app.closeAddModal()">✕</button>
+      </div>
+      <div id="add-modal-body">
+        <div class="form-group">
+          <label>Название *</label>
+          <input type="text" id="add-name" placeholder="Например: Truck Stop A4">
+        </div>
+        <div class="form-group">
+          <label>Адрес</label>
+          <input type="text" id="add-address" placeholder="Улица, город, страна">
+        </div>
+        <div class="form-group">
+          <label>Количество мест для TIR</label>
+          <input type="number" id="add-spots" placeholder="Например: 50" min="1" max="9999">
+        </div>
+        <div class="form-group">
+          <label>Сервисы</label>
+          <div class="services-grid">
+            <label class="service-check"><input type="checkbox" value="shower"> 🚿 Душ</label>
+            <label class="service-check"><input type="checkbox" value="toilet"> 🚽 Туалет</label>
+            <label class="service-check"><input type="checkbox" value="security"> 🔒 Охрана</label>
+            <label class="service-check"><input type="checkbox" value="restaurant"> ☕ Ресторан</label>
+            <label class="service-check"><input type="checkbox" value="electricity"> ⚡ Электричество</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Стоимость</label>
+          <div class="toggle-row">
+            <span>Бесплатно</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="add-paid">
+              <span class="toggle-slider"></span>
+            </label>
+            <span>Платно</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>📍 Координаты</label>
+          <p id="add-coords-display" class="coords-display">Используется центр карты</p>
+          <button id="add-use-location-btn" class="secondary-btn" style="margin-top:8px">
+            Использовать моё местоположение
+          </button>
+        </div>
+        <button id="add-submit-btn" class="primary-btn" style="margin-top:8px">
+          Отправить на модерацию
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Bottom Sheet -->
   <div id="bottom-sheet" class="hidden">
     <div id="sheet-drag-handle" onclick="app.hidePanel()">

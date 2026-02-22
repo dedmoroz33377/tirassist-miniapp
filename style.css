@@ -470,6 +470,204 @@ html, body {
   background: #0D47A1;
 }
 
+/* ─── ADD PARKING FAB ─────────────────────────────── */
+#add-parking-btn {
+  position: fixed;
+  bottom: 90px;
+  left: 16px;
+  z-index: 999;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--tg-theme-button-color, #2196F3);
+  color: var(--tg-theme-button-text-color, #fff);
+  border: none;
+  font-size: 26px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s, opacity 0.15s;
+}
+
+#add-parking-btn:active {
+  transform: scale(0.92);
+  opacity: 0.85;
+}
+
+/* ─── ADD PARKING MODAL ────────────────────────────── */
+#add-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+}
+
+#add-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+#add-modal-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--tg-theme-bg-color, #1e1e30);
+  border-radius: 20px 20px 0 0;
+  max-height: 88vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: max(env(safe-area-inset-bottom), 16px);
+}
+
+#add-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 10px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--tg-theme-bg-color, #1e1e30);
+  z-index: 1;
+}
+
+#add-modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#add-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--tg-theme-hint-color, var(--text-muted));
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+#add-modal-body {
+  padding: 14px 16px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group > label {
+  display: block;
+  font-size: 13px;
+  color: var(--tg-theme-hint-color, var(--text-muted));
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"] {
+  width: 100%;
+  background: var(--tg-theme-secondary-bg-color, #2a2a42);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--tg-theme-text-color, var(--text));
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.form-group input[type="text"]::placeholder,
+.form-group input[type="number"]::placeholder {
+  color: var(--tg-theme-hint-color, var(--text-muted));
+}
+
+.services-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.service-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--tg-theme-secondary-bg-color, #2a2a42);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 7px 13px;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.service-check input[type="checkbox"] {
+  display: none;
+}
+
+.service-check.checked {
+  background: var(--tg-theme-button-color, #2196F3);
+  border-color: transparent;
+  color: var(--tg-theme-button-text-color, #fff);
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input { display: none; }
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--tg-theme-secondary-bg-color, #2a2a42);
+  border-radius: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: 1px solid var(--border);
+}
+
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: var(--tg-theme-button-color, #2196F3);
+  border-color: transparent;
+}
+
+.toggle-switch input:checked + .toggle-slider::after {
+  transform: translateX(22px);
+}
+
+.coords-display {
+  font-size: 13px;
+  color: var(--tg-theme-hint-color, var(--text-muted));
+  background: var(--tg-theme-secondary-bg-color, #2a2a42);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
 /* ─── UTILITY ─────────────────────────────────── */
 .hidden {
   display: none !important;
