@@ -299,7 +299,7 @@ html, body {
 .chip {
   background: var(--tg-theme-secondary-bg-color, #2a2a42);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 8px;
   padding: 7px 12px;
   font-size: 13px;
   cursor: pointer;
