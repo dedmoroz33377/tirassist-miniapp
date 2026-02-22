@@ -142,12 +142,48 @@ class TirAssistApp {
   }
 
   // ─── MARKERS ────────────────────────────────────────────────
-  makeIcon(highlight = false) {
+  makeIcon(parking, highlight = false) {
+    const type = (parking.type || 'стоянка').toLowerCase();
+    const paid = parking.paid;
+    const hl   = highlight ? ' route-highlight' : '';
+    const pd   = paid ? ' pm-paid' : '';
+
+    let html;
+    switch (type) {
+      case 'spot':
+        html = `<div class="pm pm-spot${pd}${hl}"><span>P</span><span class="pm-sub">SPOT</span></div>`;
+        break;
+      case 'prom':
+        html = `<div class="pm pm-prom${pd}${hl}">
+          <svg width="22" height="18" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="18" width="32" height="13" rx="1" fill="#B0BEC5"/>
+            <rect x="7" y="20" width="4" height="4" fill="#4FC3F7"/>
+            <rect x="13" y="20" width="4" height="4" fill="#4FC3F7"/>
+            <rect x="19" y="20" width="4" height="4" fill="#4FC3F7"/>
+            <rect x="25" y="20" width="4" height="4" fill="#4FC3F7"/>
+            <rect x="7" y="26" width="4" height="5" fill="#4FC3F7"/>
+            <rect x="13" y="26" width="4" height="5" fill="#4FC3F7"/>
+            <rect x="19" y="26" width="4" height="5" fill="#4FC3F7"/>
+            <rect x="25" y="26" width="4" height="5" fill="#4FC3F7"/>
+            <rect x="14" y="6" width="4" height="13" fill="#90A4AE"/>
+            <rect x="22" y="10" width="4" height="9" fill="#90A4AE"/>
+            <ellipse cx="16" cy="5" rx="3" ry="2.5" fill="#CFD8DC" opacity="0.8"/>
+            <ellipse cx="24" cy="9" rx="2.5" ry="2" fill="#CFD8DC" opacity="0.8"/>
+          </svg>
+        </div>`;
+        break;
+      case 'autohof':
+        html = `<div class="pm pm-autohof${pd}${hl}">Auto<br>hof</div>`;
+        break;
+      default:
+        html = `<div class="pm pm-стоянка${pd}${hl}">P</div>`;
+    }
+
     return L.divIcon({
       className: '',
-      html: `<div class="parking-marker${highlight ? ' route-highlight' : ''}">P</div>`,
-      iconSize:   [34, 34],
-      iconAnchor: [17, 17],
+      html,
+      iconSize:   [38, 38],
+      iconAnchor: [19, 19],
     });
   }
 
@@ -156,7 +192,7 @@ class TirAssistApp {
     this.markerMap.clear();
 
     parkings.forEach(parking => {
-      const icon   = this.makeIcon(highlightIds.has(parking.id));
+      const icon   = this.makeIcon(parking, highlightIds.has(parking.id));
       const marker = L.marker([parking.lat, parking.lon], { icon });
 
       marker.on('click', (e) => {
@@ -682,11 +718,23 @@ class TirAssistApp {
       el.classList.remove('checked');
       el.querySelector('input').checked = false;
     });
+    // Reset type to default
+    document.querySelectorAll('.type-chip-add').forEach(c => c.classList.remove('active'));
+    const first = document.querySelector('.type-chip-add[data-type="стоянка"]');
+    if (first) first.classList.add('active');
   }
 
   _initAddParking() {
     document.getElementById('add-parking-btn').addEventListener('click', () => {
       this.openAddModal();
+    });
+
+    // Type chip single-select
+    document.querySelectorAll('.type-chip-add').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.type-chip-add').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
     });
 
     // Service chip toggle
@@ -734,13 +782,17 @@ class TirAssistApp {
       .map(cb => cb.value)
       .join(',');
 
+    const activeTypeChip = document.querySelector('.type-chip-add.active');
+    const parkingType = activeTypeChip ? activeTypeChip.dataset.type : 'стоянка';
+
     const data = {
-      type:     'new_parking',
+      type:         'new_parking',
+      parking_type: parkingType,
       name,
       lat,
       lon,
       services,
-      paid:     document.getElementById('add-paid').checked,
+      paid:         document.getElementById('add-paid').checked,
     };
 
     if (window.Telegram?.WebApp?.sendData) {

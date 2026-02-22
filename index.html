@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="style.css?v=11">
+  <link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
 
@@ -127,13 +127,30 @@
           <input type="text" id="add-name" placeholder="Например: Truck Stop A4">
         </div>
         <div class="form-group">
-          <label>Сервисы</label>
+          <label>Вид парковки *</label>
+          <div class="filter-chips" style="margin-bottom:0">
+            <button class="chip type-chip-add active" data-type="стоянка">🅿️ Стоянка</button>
+            <button class="chip type-chip-add" data-type="spot">
+              <svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:2px">
+                <rect x="1" y="1" width="22" height="22" rx="4" fill="white" stroke="#aaa" stroke-width="1.5"/>
+                <text x="12" y="13.5" font-family="Arial,sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">P</text>
+                <text x="12" y="19.5" font-family="Arial,sans-serif" font-size="4.5" font-weight="bold" text-anchor="middle" fill="#333">SPOT</text>
+              </svg>Spot
+            </button>
+            <button class="chip type-chip-add" data-type="prom">🏭 Prom</button>
+            <button class="chip type-chip-add" data-type="autohof" style="background:#22C55E;color:#fff;border-color:#22C55E">Autohof</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Удобства</label>
           <div class="services-grid">
-            <label class="service-check"><input type="checkbox" value="shower"> 🚿 Душ</label>
             <label class="service-check"><input type="checkbox" value="toilet"> 🚽 Туалет</label>
-            <label class="service-check"><input type="checkbox" value="security"> 🔒 Охрана</label>
-            <label class="service-check"><input type="checkbox" value="restaurant"> ☕ Ресторан</label>
-            <label class="service-check"><input type="checkbox" value="electricity"> ⚡ Электричество</label>
+            <label class="service-check"><input type="checkbox" value="shower"> 🚿 Душ</label>
+            <label class="service-check"><input type="checkbox" value="restaurant"> ☕ Кафе</label>
+            <label class="service-check"><input type="checkbox" value="laundry"> 👕 Прачечная</label>
+            <label class="service-check"><input type="checkbox" value="shop"> 🛒 Магазин</label>
+            <label class="service-check"><input type="checkbox" value="lighting"> 💡 Освещение</label>
+            <label class="service-check"><input type="checkbox" value="fencing"> 🚧 Ограждение</label>
           </div>
         </div>
         <div class="form-group">
@@ -192,6 +209,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>
