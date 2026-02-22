@@ -430,9 +430,9 @@ class TirAssistApp {
       const open = !panel.classList.contains('hidden');
       panel.classList.toggle('hidden', open);
       btn.classList.toggle('active', !open);
-      // Close route panel
-      document.getElementById('route-panel').classList.add('hidden');
-      document.getElementById('route-btn').classList.remove('active');
+      // Close route panel (legacy elements may not exist)
+      document.getElementById('route-panel')?.classList.add('hidden');
+      document.getElementById('route-btn')?.classList.remove('active');
     });
 
     document.querySelectorAll('.chip').forEach(chip => {
