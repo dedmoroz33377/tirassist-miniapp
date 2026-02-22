@@ -131,6 +131,20 @@ html, body {
   justify-content: flex-end;
 }
 
+#layer-btn {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+}
+
+#locate-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 16px;
+  z-index: 1000;
+}
+
 .action-btn {
   background: var(--tg-theme-bg-color, #1e1e30);
   border: 1px solid var(--border);
