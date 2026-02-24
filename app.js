@@ -125,16 +125,17 @@ class TirAssistApp {
             ? p.services.split(',').map(s => s.trim()).filter(Boolean)
             : [];
           return {
-            id:      idx,
-            name:    p.name    || 'Парковка',
-            address: p.address || '',
-            spots:   p.spots   ? parseInt(p.spots, 10) : null,
-            type:    p.type    || '',
+            id:          idx,
+            name:        p.name    || 'Парковка',
+            address:     p.address || '',
+            description: (p.description || '').trim(),
+            spots:       p.spots   ? parseInt(p.spots, 10) : null,
+            type:        p.type    || '',
             services,
-            paid:    p.paid === 'true',
-            rating:  p.rating  ? parseFloat(p.rating)  : null,
-            lat:     f.geometry.coordinates[1],
-            lon:     f.geometry.coordinates[0],
+            paid:        p.paid === 'true',
+            rating:      p.rating  ? parseFloat(p.rating)  : null,
+            lat:         f.geometry.coordinates[1],
+            lon:         f.geometry.coordinates[0],
           };
         });
 
@@ -152,10 +153,16 @@ class TirAssistApp {
     let iconUrl;
     if (type === 'магазин') {
       iconUrl = 'shop.png';
+    } else if (type === 'prom') {
+      iconUrl = 'prom.png';
+    } else if (type === 'spot') {
+      iconUrl = 'spot.png';
     } else if (services.includes('snap')) {
       iconUrl = 'snap.png';
     } else if (services.includes('dkv')) {
       iconUrl = 'dkv.png';
+    } else if (services.includes('laundry')) {
+      iconUrl = 'laundry.png';
     } else if (parking.paid) {
       iconUrl = 'parking_cash.png';
     } else {
@@ -238,6 +245,34 @@ class TirAssistApp {
       ratingEl.style.display = '';
     } else {
       ratingEl.style.display = 'none';
+    }
+
+    // Description (длинное — свёрнуто, по кнопке «Развернуть»/«Свернуть»)
+    const descRow = document.getElementById('parking-description-row');
+    const descWrap = document.getElementById('parking-description-wrap');
+    const descEl = document.getElementById('parking-description');
+    const descToggle = document.getElementById('parking-description-toggle');
+    const DESC_COLLAPSE_LEN = 150;
+    if (parking.description) {
+      descEl.textContent = parking.description;
+      descRow.classList.remove('hidden');
+      descWrap.classList.remove('description-expanded');
+      if (parking.description.length > DESC_COLLAPSE_LEN) {
+        descEl.classList.add('description-truncated');
+        descToggle.classList.remove('hidden');
+        descToggle.textContent = 'Развернуть';
+        descToggle.onclick = () => {
+          const expanded = descWrap.classList.toggle('description-expanded');
+          descEl.classList.toggle('description-truncated', !expanded);
+          descToggle.textContent = expanded ? 'Свернуть' : 'Развернуть';
+        };
+      } else {
+        descEl.classList.remove('description-truncated');
+        descToggle.classList.add('hidden');
+      }
+    } else {
+      descEl.textContent = '';
+      descRow.classList.add('hidden');
     }
 
     // Services
