@@ -500,6 +500,48 @@ html, body {
   color: var(--tg-theme-text-color, var(--text));
 }
 
+#parking-description-row {
+  margin-bottom: 14px;
+}
+
+#parking-description-row.sheet-row .sheet-label {
+  display: block;
+  font-size: 12px;
+  color: var(--tg-theme-hint-color, var(--text-muted));
+  margin-bottom: 4px;
+}
+
+#parking-description-row .sheet-description {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--tg-theme-text-color, var(--text));
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+#parking-description-row .sheet-description.description-truncated {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+#parking-description-row .description-toggle {
+  margin-top: 6px;
+  padding: 0;
+  font-size: 13px;
+  color: var(--primary, #4fc3f7);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+#parking-description-row .description-toggle:hover {
+  opacity: 0.85;
+}
+
 #parking-rating::before { content: ""; }
 
 #services-row {

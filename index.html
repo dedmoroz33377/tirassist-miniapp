@@ -213,6 +213,13 @@
       <div id="parking-meta">
         <span id="parking-rating"></span>
       </div>
+      <div id="parking-description-row" class="sheet-row hidden">
+        <span class="sheet-label">Описание</span>
+        <div id="parking-description-wrap">
+          <p id="parking-description" class="sheet-description"></p>
+          <button type="button" id="parking-description-toggle" class="description-toggle hidden">Развернуть</button>
+        </div>
+      </div>
       <div id="services-row"></div>
       <button id="maps-btn" class="primary-btn maps-btn">
         🗺️ Открыть в Google Maps
@@ -227,6 +234,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
-  <script src="app.js?v=13"></script>
+  <script src="app.js?v=14"></script>
 </body>
 </html>
