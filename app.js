@@ -110,34 +110,89 @@ class TirAssistApp {
   }
 
   // ─── LOAD & PARSE KML ───────────────────────────────────────
+  _getNodeText(node, tagName) {
+    if (!node) return '';
+    // Try with and without namespace (handles both namespaced and plain XML)
+    let el = node.getElementsByTagName(tagName)[0]
+           || node.getElementsByTagNameNS('*', tagName)[0]
+           || node.getElementsByTagNameNS('http://www.opengis.net/kml/2.2', tagName)[0];
+    return el ? (el.textContent || '').trim() : '';
+  }
+
+  _parseExtendedData(placemark) {
+    const result = {};
+    // Use both methods to handle namespace differences
+    const dataTags = [
+      ...Array.from(placemark.getElementsByTagName('Data')),
+      ...Array.from(placemark.getElementsByTagNameNS('http://www.opengis.net/kml/2.2', 'Data')),
+    ];
+    // Deduplicate by unique node reference
+    const seen = new Set();
+    for (const data of dataTags) {
+      if (seen.has(data)) continue;
+      seen.add(data);
+      const name = data.getAttribute('name');
+      if (!name) continue;
+      const val = this._getNodeText(data, 'value');
+      result[name] = val;
+    }
+    return result;
+  }
+
   async loadParkings() {
     try {
-      const res  = await fetch('./data/parkings.kml');
+      const res  = await fetch('./data/parkings.kml?v=2');
       const text = await res.text();
       const dom  = new DOMParser().parseFromString(text, 'text/xml');
-      const geo  = toGeoJSON.kml(dom);
 
-      this.allParkings = geo.features
-        .filter(f => f.geometry?.type === 'Point')
-        .map((f, idx) => {
-          const p        = f.properties || {};
-          const services = p.services
-            ? p.services.split(',').map(s => s.trim()).filter(Boolean)
-            : [];
-          return {
-            id:          idx,
-            name:        p.name    || 'Парковка',
-            address:     p.address || '',
-            description: (p.description || '').trim(),
-            spots:       p.spots   ? parseInt(p.spots, 10) : null,
-            type:        p.type    || '',
-            services,
-            paid:        p.paid === 'true',
-            rating:      p.rating  ? parseFloat(p.rating)  : null,
-            lat:         f.geometry.coordinates[1],
-            lon:         f.geometry.coordinates[0],
-          };
+      // Get all Placemarks (try both namespaced and plain)
+      const placemarks = [
+        ...Array.from(dom.getElementsByTagName('Placemark')),
+        ...Array.from(dom.getElementsByTagNameNS('http://www.opengis.net/kml/2.2', 'Placemark')),
+      ];
+      const seen = new Set();
+      const uniquePlacemarks = placemarks.filter(n => { if (seen.has(n)) return false; seen.add(n); return true; });
+
+      this.allParkings = [];
+      let idx = 0;
+
+      for (const pm of uniquePlacemarks) {
+        // Coordinates
+        const coordText = this._getNodeText(pm, 'coordinates');
+        if (!coordText) continue;
+        const parts = coordText.split(',');
+        if (parts.length < 2) continue;
+        const lon = parseFloat(parts[0]);
+        const lat = parseFloat(parts[1]);
+        if (isNaN(lat) || isNaN(lon)) continue;
+
+        // Name from KML <name>
+        const name = this._getNodeText(pm, 'name') || 'Парковка';
+
+        // ExtendedData properties
+        const p = this._parseExtendedData(pm);
+
+        const services = p.services
+          ? p.services.split(',').map(s => s.trim()).filter(Boolean)
+          : [];
+
+        this.allParkings.push({
+          id:          idx++,
+          name,
+          address:     p.address     || '',
+          description: (p.description || '').trim(),
+          spots:       p.spots ? parseInt(p.spots, 10) : null,
+          type:        p.type        || '',
+          services,
+          paid:        p.paid === 'true',
+          rating:      p.rating ? parseFloat(p.rating) : null,
+          lat,
+          lon,
         });
+      }
+
+      const paidCount = this.allParkings.filter(p => p.paid).length;
+      console.log(`KML loaded: ${this.allParkings.length} points, paid: ${paidCount}`);
 
       this.renderMarkers(this.allParkings);
     } catch (err) {
