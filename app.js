@@ -1,11 +1,14 @@
 'use strict';
 
 const SERVICES = {
-  shower:      { icon: '🚿', label: 'Душ' },
-  toilet:      { icon: '🚽', label: 'Туалет' },
-  security:    { icon: '🔒', label: 'Охрана' },
-  restaurant:  { icon: '☕', label: 'Ресторан' },
-  electricity: { icon: '⚡', label: 'Электричество' },
+  shower:     { icon: '🚿', label: 'Душ' },
+  toilet:     { icon: '🚽', label: 'Туалет' },
+  restaurant: { icon: '☕', label: 'Кафе' },
+  laundry:    { icon: '<img src="laundry.png" width="14" style="vertical-align:middle">', label: 'Прачечная' },
+  lighting:   { icon: '💡', label: 'Освещение' },
+  fencing:    { icon: '🚧', label: 'Ограждение' },
+  dkv:        { icon: '<img src="dkv.png" width="16" style="vertical-align:middle">', label: 'DKV' },
+  snap:       { icon: '<img src="snap.png" width="16" style="vertical-align:middle">', label: 'Snap' },
 };
 
 const TILE_LAYERS = {
@@ -143,45 +146,24 @@ class TirAssistApp {
 
   // ─── MARKERS ────────────────────────────────────────────────
   makeIcon(parking, highlight = false) {
-    const type = (parking.type || 'стоянка').toLowerCase();
-    const paid = parking.paid;
-    const hl   = highlight ? ' route-highlight' : '';
-    const pd   = paid ? ' pm-paid' : '';
+    const type     = (parking.type || 'parking').toLowerCase();
+    const services = parking.services || [];
 
-    let html;
-    switch (type) {
-      case 'spot':
-        html = `<div class="pm pm-spot${pd}${hl}"><span>P</span><span class="pm-sub">SPOT</span></div>`;
-        break;
-      case 'prom':
-        html = `<div class="pm pm-prom${pd}${hl}">
-          <svg width="22" height="18" viewBox="0 0 40 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="18" width="32" height="13" rx="1" fill="#B0BEC5"/>
-            <rect x="7" y="20" width="4" height="4" fill="#4FC3F7"/>
-            <rect x="13" y="20" width="4" height="4" fill="#4FC3F7"/>
-            <rect x="19" y="20" width="4" height="4" fill="#4FC3F7"/>
-            <rect x="25" y="20" width="4" height="4" fill="#4FC3F7"/>
-            <rect x="7" y="26" width="4" height="5" fill="#4FC3F7"/>
-            <rect x="13" y="26" width="4" height="5" fill="#4FC3F7"/>
-            <rect x="19" y="26" width="4" height="5" fill="#4FC3F7"/>
-            <rect x="25" y="26" width="4" height="5" fill="#4FC3F7"/>
-            <rect x="14" y="6" width="4" height="13" fill="#90A4AE"/>
-            <rect x="22" y="10" width="4" height="9" fill="#90A4AE"/>
-            <ellipse cx="16" cy="5" rx="3" ry="2.5" fill="#CFD8DC" opacity="0.8"/>
-            <ellipse cx="24" cy="9" rx="2.5" ry="2" fill="#CFD8DC" opacity="0.8"/>
-          </svg>
-        </div>`;
-        break;
-      case 'autohof':
-        html = `<div class="pm pm-autohof${pd}${hl}">Auto<br>hof</div>`;
-        break;
-      default:
-        html = `<div class="pm pm-стоянка${pd}${hl}">P</div>`;
+    let iconUrl;
+    if (type === 'магазин') {
+      iconUrl = 'shop.png';
+    } else if (services.includes('snap')) {
+      iconUrl = 'snap.png';
+    } else if (services.includes('dkv')) {
+      iconUrl = 'dkv.png';
+    } else if (parking.paid) {
+      iconUrl = 'parking_cash.png';
+    } else {
+      iconUrl = 'parking_free.png';
     }
 
-    return L.divIcon({
-      className: '',
-      html,
+    return L.icon({
+      iconUrl,
       iconSize:   [38, 38],
       iconAnchor: [19, 19],
     });
@@ -638,10 +620,21 @@ class TirAssistApp {
       });
     });
 
-    // Payment toggle
-    document.getElementById('filter-paid-toggle').addEventListener('change', (e) => {
-      this.filterPaid = e.target.checked ? true : null;
-      this.applyFilters();
+    // Payment buttons (Бесплатно / Платно)
+    document.querySelectorAll('.pay-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = btn.dataset.paid === 'true';
+        if (this.filterPaid === val) {
+          // toggle off
+          this.filterPaid = null;
+          btn.classList.remove('active');
+        } else {
+          this.filterPaid = val;
+          document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        }
+        this.applyFilters();
+      });
     });
 
     // Reset all
@@ -650,7 +643,6 @@ class TirAssistApp {
       this.activeType  = null;
       this.filterPaid  = null;
       document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-      document.getElementById('filter-paid-toggle').checked = false;
       this.renderMarkers(this.allParkings);
     });
   }
@@ -713,15 +705,18 @@ class TirAssistApp {
   _resetAddForm() {
     document.getElementById('add-name').value = '';
     document.getElementById('add-coords').value = '';
-    document.getElementById('add-paid').checked = false;
     document.querySelectorAll('.service-check').forEach(el => {
       el.classList.remove('checked');
       el.querySelector('input').checked = false;
     });
-    // Reset type to default
+    // Reset type to default (parking)
     document.querySelectorAll('.type-chip-add').forEach(c => c.classList.remove('active'));
-    const first = document.querySelector('.type-chip-add[data-type="стоянка"]');
+    const first = document.querySelector('.type-chip-add[data-type="parking"]');
     if (first) first.classList.add('active');
+    // Reset payment to default (free)
+    document.querySelectorAll('.pay-btn-add').forEach(b => b.classList.remove('active'));
+    const freBtn = document.querySelector('.pay-btn-add[data-paid="false"]');
+    if (freBtn) freBtn.classList.add('active');
   }
 
   _initAddParking() {
@@ -733,6 +728,14 @@ class TirAssistApp {
     document.querySelectorAll('.type-chip-add').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.type-chip-add').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Payment button single-select
+    document.querySelectorAll('.pay-btn-add').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.pay-btn-add').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
       });
     });
@@ -783,7 +786,10 @@ class TirAssistApp {
       .join(',');
 
     const activeTypeChip = document.querySelector('.type-chip-add.active');
-    const parkingType = activeTypeChip ? activeTypeChip.dataset.type : 'стоянка';
+    const parkingType = activeTypeChip ? activeTypeChip.dataset.type : 'parking';
+
+    const activePaidBtn = document.querySelector('.pay-btn-add.active');
+    const isPaid = activePaidBtn ? activePaidBtn.dataset.paid === 'true' : false;
 
     const data = {
       type:         'new_parking',
@@ -792,7 +798,7 @@ class TirAssistApp {
       lat,
       lon,
       services,
-      paid:         document.getElementById('add-paid').checked,
+      paid:         isPaid,
     };
 
     if (window.Telegram?.WebApp?.sendData) {

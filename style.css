@@ -288,6 +288,21 @@ html, body {
   border: 1px solid var(--border);
 }
 
+/* Payment filter buttons */
+.pay-btn.active[data-paid="false"],
+.pay-btn-add.active[data-paid="false"] {
+  background: #29B6F6;
+  border-color: #29B6F6;
+  color: #fff;
+}
+
+.pay-btn.active[data-paid="true"],
+.pay-btn-add.active[data-paid="true"] {
+  background: #22C55E;
+  border-color: #22C55E;
+  color: #fff;
+}
+
 /* ─── FILTER CHIPS ────────────────────────────── */
 .filter-chips {
   display: flex;
