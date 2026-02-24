@@ -243,8 +243,7 @@ html, body {
 
 /* ─── FILTER SECTIONS ─────────────────────────── */
 #pane-filters {
-  overflow-y: auto;
-  max-height: 55vh;
+  overflow-y: visible;
 }
 
 .filter-section {
