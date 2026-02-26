@@ -225,7 +225,7 @@ class TirAssistApp {
     } else if (type === 'prom') {
       iconUrl = 'prom.png';
     } else if (type === 'spot') {
-      iconUrl = 'spot.png';
+      iconUrl = 'spot.png?v=2';
     } else if (services.includes('snap')) {
       iconUrl = 'snap.png';
     } else if (services.includes('dkv')) {
