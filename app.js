@@ -215,39 +215,54 @@ class TirAssistApp {
   }
 
   // ─── MARKERS ────────────────────────────────────────────────
-  makeIcon(parking, highlight = false) {
+  _iconUrl(parking) {
     const type     = (parking.type || 'parking').toLowerCase();
     const services = parking.services || [];
+    if (type === 'магазин')           return 'shop.png';
+    if (type === 'prom')              return 'prom.png';
+    if (type === 'spot')              return 'spot.png?v=2';
+    if (services.includes('snap'))    return 'snap.png';
+    if (services.includes('dkv'))     return 'dkv.png';
+    if (services.includes('laundry')) return 'laundry.png';
+    if (parking.paid)                 return 'parking_cash.png';
+    return 'parking_free.png';
+  }
 
-    let iconUrl;
-    if (type === 'магазин') {
-      iconUrl = 'shop.png';
-    } else if (type === 'prom') {
-      iconUrl = 'prom.png';
-    } else if (type === 'spot') {
-      iconUrl = 'spot.png?v=2';
-    } else if (services.includes('snap')) {
-      iconUrl = 'snap.png';
-    } else if (services.includes('dkv')) {
-      iconUrl = 'dkv.png';
-    } else if (services.includes('laundry')) {
-      iconUrl = 'laundry.png';
-    } else if (parking.paid) {
-      iconUrl = 'parking_cash.png';
-    } else {
-      iconUrl = 'parking_free.png';
-    }
-
-    return L.icon({
-      iconUrl,
+  makeIcon(parking, active = false) {
+    const url = this._iconUrl(parking);
+    return L.divIcon({
+      className: '',
+      html: `<div class="map-marker-wrap${active ? ' map-marker-active' : ''}">
+               <img src="${url}" width="38" height="38">
+             </div>`,
       iconSize:   [38, 38],
       iconAnchor: [19, 19],
+      popupAnchor: [0, -22],
     });
+  }
+
+  _setActiveMarker(parkingId) {
+    // Reset previous
+    if (this._activeMarkerId != null) {
+      const prev = this.markerMap.get(this._activeMarkerId);
+      if (prev) {
+        const parking = this.allParkings.find(p => p.id === this._activeMarkerId);
+        if (parking) prev.setIcon(this.makeIcon(parking, false));
+      }
+    }
+    // Highlight new
+    this._activeMarkerId = parkingId;
+    const marker = this.markerMap.get(parkingId);
+    if (marker) {
+      const parking = this.allParkings.find(p => p.id === parkingId);
+      if (parking) marker.setIcon(this.makeIcon(parking, true));
+    }
   }
 
   renderMarkers(parkings, highlightIds = new Set()) {
     this.clusterGroup.clearLayers();
     this.markerMap.clear();
+    this._activeMarkerId = null;
 
     parkings.forEach(parking => {
       const icon   = this.makeIcon(parking, highlightIds.has(parking.id));
@@ -255,6 +270,7 @@ class TirAssistApp {
 
       marker.on('click', (e) => {
         L.DomEvent.stopPropagation(e);
+        this._setActiveMarker(parking.id);
         this.showPanel(parking);
       });
 
@@ -528,6 +544,13 @@ class TirAssistApp {
     const sheet = document.getElementById('bottom-sheet');
     sheet.classList.remove('visible');
     setTimeout(() => sheet.classList.add('hidden'), 340);
+    // Reset active marker highlight
+    if (this._activeMarkerId != null) {
+      const marker  = this.markerMap.get(this._activeMarkerId);
+      const parking = this.allParkings?.find(p => p.id === this._activeMarkerId);
+      if (marker && parking) marker.setIcon(this.makeIcon(parking, false));
+      this._activeMarkerId = null;
+    }
   }
 
   // ─── GEOLOCATION ────────────────────────────────────────────
