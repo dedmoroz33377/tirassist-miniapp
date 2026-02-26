@@ -50,7 +50,7 @@ class TirAssistApp {
     this.currentLayer       = 'dark';
     this.tileLayer          = null;
     this.overlayLayer       = null;
-    this._userLocationLabel = '📍 Моё местоположение';
+    this._userLocationLabel = 'Моё местоположение.';
   }
 
   // ─── ENTRY POINT ────────────────────────────────────────────
@@ -58,6 +58,8 @@ class TirAssistApp {
     this.initTelegram();
     this.initMap();
     this.initUI();
+    // From-dot starts empty until geolocation resolves
+    document.querySelector('.route-dot-from')?.classList.add('empty');
     await this.loadParkings();
     this.getUserLocation();
   }
@@ -80,8 +82,6 @@ class TirAssistApp {
 
     const def = TILE_LAYERS.dark;
     this.tileLayer = L.tileLayer(def.url, def.options).addTo(this.map);
-
-    L.control.zoom({ position: 'bottomright' }).addTo(this.map);
 
     this.clusterGroup = L.markerClusterGroup({
       maxClusterRadius: 55,
@@ -385,9 +385,11 @@ class TirAssistApp {
         // Auto-fill "From" field with sentinel (only if user hasn't typed anything)
         const fromInput = document.getElementById('route-from');
         if (!fromInput.value || fromInput.value === this._userLocationLabel) {
-          this._userLocationLabel = '📍 Моё местоположение';
+          this._userLocationLabel = 'Моё местоположение.';
           fromInput.value = this._userLocationLabel;
         }
+        // Fill dot — remove empty state
+        document.querySelector('.route-dot-from')?.classList.remove('empty');
       },
       (err) => console.warn('Geolocation denied:', err),
       { enableHighAccuracy: true, timeout: 10000 },
@@ -586,8 +588,8 @@ class TirAssistApp {
     }
 
     const btn = document.getElementById('layer-btn');
-    btn.textContent = this.currentLayer === 'dark' ? '🗺' : '🛰️';
-    btn.title       = this.currentLayer === 'dark' ? 'Тёмная карта' : 'Спутник Google';
+    btn.title = this.currentLayer === 'dark' ? 'Тёмная карта' : 'Спутник Google';
+    btn.classList.toggle('active', this.currentLayer === 'satellite');
   }
 
   // ─── UI WIRING ──────────────────────────────────────────────
@@ -596,6 +598,7 @@ class TirAssistApp {
     this._initDims();
     this._initRoute();
     this._initLocate();
+    this._initZoom();
     this._initLayerToggle();
     this._initAddParking();
   }
@@ -760,21 +763,24 @@ class TirAssistApp {
   }
 
   _initLocate() {
-    document.getElementById('locate-btn').addEventListener('click', () => {
+    const doLocate = () => {
       if (this.userPosition) {
         this.map.setView([this.userPosition.lat, this.userPosition.lon], 14);
       } else {
         this.getUserLocation();
       }
-    });
+    };
+    document.getElementById('locate-btn').addEventListener('click', doLocate);
+    document.getElementById('locate-in-route-btn')?.addEventListener('click', doLocate);
+  }
+
+  _initZoom() {
+    document.getElementById('zoom-in-btn').addEventListener('click', () => this.map.zoomIn());
+    document.getElementById('zoom-out-btn').addEventListener('click', () => this.map.zoomOut());
   }
 
   _initLayerToggle() {
-    // Set initial button label (dark = Google Hybrid by default)
-    const btn = document.getElementById('layer-btn');
-    btn.textContent = '🗺';
-    btn.title       = 'Тёмная карта';
-    btn.addEventListener('click', () => {
+    document.getElementById('layer-btn').addEventListener('click', () => {
       this.toggleLayer();
     });
   }

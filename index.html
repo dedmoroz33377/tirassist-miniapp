@@ -8,32 +8,63 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="style.css?v=17">
 </head>
 <body>
 
   <div id="map"></div>
 
-  <!-- Top Bar -->
-  <div id="top-bar">
-    <div id="route-inline">
-      <div class="route-inline-row">
-        <span class="route-dot green"></span>
-        <input type="text" id="route-from" placeholder="Откуда" autocomplete="off">
-      </div>
-      <div class="route-inline-divider"></div>
-      <div class="route-inline-row">
-        <span class="route-dot red"></span>
-        <input type="text" id="route-to" placeholder="Куда" autocomplete="off">
-        <button id="route-go-btn" class="route-go-btn" title="Найти парковки">→</button>
-      </div>
-      <button id="route-clear-btn" class="route-clear-btn hidden">✕ Очистить маршрут</button>
+  <!-- Right Map Controls -->
+  <div id="map-controls">
+    <button id="layer-btn" class="map-ctrl-btn" title="Слои карты">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+        <polyline points="2 17 12 22 22 17"/>
+        <polyline points="2 12 12 17 22 12"/>
+      </svg>
+    </button>
+    <button id="zoom-in-btn" class="map-ctrl-btn map-ctrl-zoom" title="Приблизить">+</button>
+    <button id="zoom-out-btn" class="map-ctrl-btn map-ctrl-zoom" title="Отдалить">−</button>
+    <button id="filter-btn" class="map-ctrl-btn" title="Фильтры">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="6" x2="20" y2="6"/>
+        <line x1="8" y1="12" x2="16" y2="12"/>
+        <line x1="11" y1="18" x2="13" y2="18"/>
+      </svg>
+    </button>
+    <button id="locate-btn" class="map-ctrl-btn" title="Моё местоположение">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        <circle cx="12" cy="12" r="8" stroke-opacity="0.3"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Bottom Route Bar -->
+  <div id="bottom-route-bar">
+    <div class="route-row" id="route-row-from">
+      <span class="route-dot route-dot-from"></span>
+      <input type="text" id="route-from" placeholder="Мое местоположение." autocomplete="off">
+      <button id="locate-in-route-btn" class="route-icon-btn" title="Использовать геолокацию">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+        </svg>
+      </button>
     </div>
-    <div id="top-actions">
-      <button id="layer-btn" class="action-btn" title="Спутник">🛰️</button>
-      <button id="filter-btn" class="action-btn" title="Фильтры">⚙️</button>
-      <button id="locate-btn" class="action-btn" title="Моё местоположение">📍</button>
+    <div class="route-bar-divider"></div>
+    <div class="route-row" id="route-row-to">
+      <span class="route-dot route-dot-to"></span>
+      <input type="text" id="route-to" placeholder="Куда" autocomplete="off">
+      <button id="route-go-btn" class="route-go-btn" title="Найти парковки">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </button>
     </div>
+    <button id="route-clear-btn" class="route-clear-btn hidden">✕ Очистить маршрут</button>
   </div>
 
   <!-- Filter / Dims Panel -->
@@ -234,6 +265,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
-  <script src="app.js?v=16"></script>
+  <script src="app.js?v=17"></script>
 </body>
 </html>
