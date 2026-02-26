@@ -2,5 +2,47 @@
 <kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>
     <name>TirAssist Community Parkings</name>
+    <Placemark>
+      <name>Shell</name>
+      <ExtendedData>
+        <Data name="type"><value>parking</value></Data>
+        <Data name="address"><value></value></Data>
+        <Data name="services"><value>toilet,shower,restaurant</value></Data>
+        <Data name="paid"><value>false</value></Data>
+        <Data name="source"><value>community</value></Data>
+        <Data name="rating"><value></value></Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>6.660728,49.132972,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Shell достаточно мест для тир</name>
+      <ExtendedData>
+        <Data name="type"><value>parking</value></Data>
+        <Data name="address"><value></value></Data>
+        <Data name="services"><value>toilet,shower,restaurant</value></Data>
+        <Data name="paid"><value>false</value></Data>
+        <Data name="source"><value>community</value></Data>
+        <Data name="rating"><value></value></Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>6.662212,49.132368,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Franprix</name>
+      <ExtendedData>
+        <Data name="type"><value>parking</value></Data>
+        <Data name="address"><value></value></Data>
+        <Data name="services"><value>toilet,shower,restaurant,lighting</value></Data>
+        <Data name="paid"><value>false</value></Data>
+        <Data name="source"><value>community</value></Data>
+        <Data name="rating"><value></value></Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>5.6332,45.578918,0</coordinates>
+      </Point>
+    </Placemark>
   </Document>
 </kml>
