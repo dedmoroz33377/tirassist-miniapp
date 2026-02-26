@@ -299,14 +299,19 @@ class TirAssistApp {
     // Distance badge
     const distEl = document.getElementById('parking-distance');
     if (this.userPosition) {
-      const km = this.haversine(
+      const straightKm = this.haversine(
         this.userPosition.lat, this.userPosition.lon,
         parking.lat, parking.lon,
       );
-      distEl.textContent = km < 1
-        ? `${Math.round(km * 1000)} м`
-        : `${km.toFixed(1)} км`;
+      // Show straight-line first, then update with road distance from OSRM
+      const fmtKm = km => km < 1 ? `${Math.round(km * 1000)} м` : `${km.toFixed(1)} км`;
+      distEl.textContent = fmtKm(straightKm);
       distEl.classList.remove('hidden');
+      this._fetchRoadDistance(this.userPosition, { lat: parking.lat, lon: parking.lon })
+        .then(roadKm => {
+          if (roadKm != null) distEl.textContent = fmtKm(roadKm);
+        })
+        .catch(() => {});
     } else {
       distEl.classList.add('hidden');
     }
@@ -748,6 +753,21 @@ class TirAssistApp {
     document.getElementById('route-to').value = '';
     this._syncFromClear();
     this._syncToClear();
+  }
+
+  // ─── ROAD DISTANCE via OSRM ─────────────────────────────────
+  async _fetchRoadDistance(from, to) {
+    try {
+      const url = `https://router.project-osrm.org/route/v1/driving/` +
+        `${from.lon},${from.lat};${to.lon},${to.lat}?overview=false`;
+      const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+      if (!res.ok) return null;
+      const data = await res.json();
+      if (data.code !== 'Ok' || !data.routes?.length) return null;
+      return data.routes[0].distance / 1000; // metres → km
+    } catch {
+      return null;
+    }
   }
 
   // ─── MATH ───────────────────────────────────────────────────
