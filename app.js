@@ -304,13 +304,15 @@ class TirAssistApp {
         parking.lat, parking.lon,
       );
       const fmtKm = km => km < 1 ? `${Math.round(km * 1000)} м` : `${km.toFixed(1)} км`;
-      distEl.textContent = '—';
-      distEl.classList.remove('hidden');
+      distEl.classList.add('hidden');
       this._fetchRoadDistance(this.userPosition, { lat: parking.lat, lon: parking.lon })
         .then(roadKm => {
-          distEl.textContent = roadKm != null ? fmtKm(roadKm) : fmtKm(straightKm);
+          if (roadKm != null) {
+            distEl.textContent = fmtKm(roadKm);
+            distEl.classList.remove('hidden');
+          }
         })
-        .catch(() => { distEl.textContent = fmtKm(straightKm); });
+        .catch(() => {});
     } else {
       distEl.classList.add('hidden');
     }
