@@ -863,7 +863,7 @@ class TirAssistApp {
     document.addEventListener('click', (e) => {
       if (!panel.classList.contains('hidden') &&
           !panel.contains(e.target) &&
-          e.target !== btn) {
+          !btn.contains(e.target)) {
         panel.classList.add('hidden');
         btn.classList.remove('active');
       }
