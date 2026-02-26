@@ -132,25 +132,20 @@ class TirAssistApp {
     return result;
   }
 
-  async loadParkings() {
+  async _parsePlacemarksFromKml(url) {
     try {
-      const res  = await fetch('./data/parkings.kml?v=2');
+      const res  = await fetch(url);
       const text = await res.text();
       const dom  = new DOMParser().parseFromString(text, 'text/xml');
 
-      // Get all Placemarks (try both namespaced and plain)
+      const seen = new Set();
       const placemarks = [
         ...Array.from(dom.getElementsByTagName('Placemark')),
         ...Array.from(dom.getElementsByTagNameNS('http://www.opengis.net/kml/2.2', 'Placemark')),
-      ];
-      const seen = new Set();
-      const uniquePlacemarks = placemarks.filter(n => { if (seen.has(n)) return false; seen.add(n); return true; });
+      ].filter(n => { if (seen.has(n)) return false; seen.add(n); return true; });
 
-      this.allParkings = [];
-      let idx = 0;
-
-      for (const pm of uniquePlacemarks) {
-        // Coordinates
+      const result = [];
+      for (const pm of placemarks) {
         const coordText = this._getNodeText(pm, 'coordinates');
         if (!coordText) continue;
         const parts = coordText.split(',');
@@ -159,33 +154,44 @@ class TirAssistApp {
         const lat = parseFloat(parts[1]);
         if (isNaN(lat) || isNaN(lon)) continue;
 
-        // Name from KML <name>
         const name = this._getNodeText(pm, 'name') || 'Парковка';
-
-        // ExtendedData properties
-        const p = this._parseExtendedData(pm);
-
+        const p    = this._parseExtendedData(pm);
         const services = p.services
           ? p.services.split(',').map(s => s.trim()).filter(Boolean)
           : [];
 
-        this.allParkings.push({
-          id:          idx++,
+        result.push({
           name,
           address:     p.address     || '',
           description: (p.description || '').trim(),
           spots:       p.spots ? parseInt(p.spots, 10) : null,
-          type:        p.type        || '',
+          type:        p.type        || 'parking',
           services,
           paid:        p.paid === 'true',
           rating:      p.rating ? parseFloat(p.rating) : null,
+          source:      p.source      || 'db',
           lat,
           lon,
         });
       }
+      return result;
+    } catch (err) {
+      console.warn(`KML load warning (${url}):`, err);
+      return [];
+    }
+  }
 
-      const paidCount = this.allParkings.filter(p => p.paid).length;
-      console.log(`KML loaded: ${this.allParkings.length} points, paid: ${paidCount}`);
+  async loadParkings() {
+    try {
+      const [dbPoints, userPoints] = await Promise.all([
+        this._parsePlacemarksFromKml('./data/parkings.kml?v=2'),
+        this._parsePlacemarksFromKml('./data/user_parkings.kml?v=2'),
+      ]);
+
+      const allPoints = [...dbPoints, ...userPoints];
+      this.allParkings = allPoints.map((p, idx) => ({ id: idx, ...p }));
+
+      console.log(`KML: BD TIR=${dbPoints.length}, community=${userPoints.length}, paid=${this.allParkings.filter(p=>p.paid).length}`);
 
       this.renderMarkers(this.allParkings);
     } catch (err) {
