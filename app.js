@@ -114,6 +114,52 @@ class TirAssistApp {
 
     this.map.addLayer(this.clusterGroup);
     this.map.on('click', () => this.hidePanel());
+
+    this._initSheetSwipe();
+  }
+
+  // ─── SWIPE-DOWN TO DISMISS BOTTOM SHEET ─────────────────────
+  _initSheetSwipe() {
+    const sheet = document.getElementById('bottom-sheet');
+    let startY = 0;
+    let currentY = 0;
+    let isDragging = false;
+
+    const onStart = (e) => {
+      // Only start drag from the handle area or top of sheet
+      const touch = e.touches ? e.touches[0] : e;
+      startY = touch.clientY;
+      currentY = 0;
+      isDragging = true;
+      sheet.style.transition = 'none';
+    };
+
+    const onMove = (e) => {
+      if (!isDragging) return;
+      const touch = e.touches ? e.touches[0] : e;
+      currentY = touch.clientY - startY;
+      if (currentY < 0) currentY = 0; // no drag up
+      sheet.style.transform = `translateY(${currentY}px)`;
+    };
+
+    const onEnd = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      sheet.style.transition = '';
+      if (currentY > 80) {
+        // Dismiss
+        this.hidePanel();
+      } else {
+        // Snap back
+        sheet.style.transform = '';
+      }
+      currentY = 0;
+    };
+
+    // Touch events
+    sheet.addEventListener('touchstart', onStart, { passive: true });
+    sheet.addEventListener('touchmove', onMove, { passive: true });
+    sheet.addEventListener('touchend', onEnd);
   }
 
   // ─── LOAD & PARSE KML ───────────────────────────────────────
@@ -553,6 +599,8 @@ class TirAssistApp {
 
   hidePanel() {
     const sheet = document.getElementById('bottom-sheet');
+    sheet.style.transition = '';
+    sheet.style.transform = '';
     sheet.classList.remove('visible');
     setTimeout(() => sheet.classList.add('hidden'), 340);
     // Reset active marker highlight
