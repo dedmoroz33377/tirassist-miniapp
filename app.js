@@ -422,7 +422,9 @@ class TirAssistApp {
 
   // ─── ROUTE MODE ─────────────────────────────────────────────
   async buildRoute(fromQ, toQ) {
+    document.getElementById('route-loading').classList.remove('hidden');
     let from, to;
+    try {
 
     // Resolve "from"
     if (fromQ === this._userLocationLabel && this.userPosition) {
@@ -528,6 +530,10 @@ class TirAssistApp {
     this.renderMarkers(nearRoute, highlightIds);
     this.routeActive = true;
     document.getElementById('route-clear-btn').classList.remove('hidden');
+
+    } finally {
+      document.getElementById('route-loading').classList.add('hidden');
+    }
   }
 
   clearRoute() {
