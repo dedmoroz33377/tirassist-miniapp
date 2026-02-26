@@ -865,36 +865,57 @@ html, body {
 #parking-coords-row {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   margin-bottom: 12px;
+}
+
+#parking-coords-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--tg-theme-secondary-bg-color, #1e1e36);
+  border: 1.5px solid rgba(123, 47, 190, 0.35);
+  border-radius: 10px;
+  padding: 8px 12px;
+  min-width: 0;
+}
+
+.coords-pin-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #7B2FBE;
+  opacity: 0.85;
 }
 
 #parking-coords {
   font-size: 13px;
-  color: var(--tg-theme-hint-color, var(--text-muted));
+  color: var(--tg-theme-text-color, #d0d0e8);
   font-family: monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .copy-btn {
-  background: rgba(79, 195, 247, 0.15);
-  border: 1px solid rgba(79, 195, 247, 0.4);
-  border-radius: var(--radius);
-  padding: 6px 10px;
-  font-size: 15px;
+  background: var(--tg-theme-secondary-bg-color, #1e1e36);
+  border: 1.5px solid rgba(123, 47, 190, 0.35);
+  border-radius: 10px;
+  padding: 8px 10px;
   cursor: pointer;
-  color: var(--primary);
+  color: #a066d3;
   flex-shrink: 0;
-  transition: opacity 0.2s, transform 0.2s;
-}
-
-.copy-btn:hover {
-  opacity: 0.9;
-  transform: scale(1.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, transform 0.15s;
+  touch-action: manipulation;
 }
 
 .copy-btn:active {
-  opacity: 0.65;
-  transform: scale(0.98);
+  background: rgba(123, 47, 190, 0.2);
+  transform: scale(0.93);
 }
 
 #parking-meta {

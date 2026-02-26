@@ -48,7 +48,7 @@ class TirAssistApp {
     this.userPosition       = null;
     this.userMarker         = null;
     this.activeFilters      = new Set();
-    this.activeType         = null;
+    this.activeTypes        = new Set();   // multi-select for parking types
     this.filterPaid         = null;
     this.routeLayer         = null;
     this.routeActive        = false;
@@ -316,21 +316,26 @@ class TirAssistApp {
     const coordsText = `${parking.lat.toFixed(6)}, ${parking.lon.toFixed(6)}`;
     document.getElementById('parking-coords').textContent = coordsText;
     coordsRow.classList.remove('hidden');
-    document.getElementById('parking-coords-copy').onclick = () => {
-      navigator.clipboard.writeText(coordsText).then(() => {
-        const btn = document.getElementById('parking-coords-copy');
-        btn.textContent = '✅';
-        setTimeout(() => { btn.textContent = '📋'; }, 1500);
-      }).catch(() => {
+    const copyBtn = document.getElementById('parking-coords-copy');
+    const copySvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>`;
+    const checkSvg = `<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style="color:#22C55E"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+    copyBtn.onclick = () => {
+      const doCopy = () => {
+        copyBtn.innerHTML = checkSvg;
+        copyBtn.style.borderColor = 'rgba(34,197,94,0.4)';
+        setTimeout(() => {
+          copyBtn.innerHTML = copySvg;
+          copyBtn.style.borderColor = '';
+        }, 1500);
+      };
+      navigator.clipboard.writeText(coordsText).then(doCopy).catch(() => {
         const ta = document.createElement('textarea');
         ta.value = coordsText;
         document.body.appendChild(ta);
         ta.select();
         document.execCommand('copy');
         document.body.removeChild(ta);
-        const btn = document.getElementById('parking-coords-copy');
-        btn.textContent = '✅';
-        setTimeout(() => { btn.textContent = '📋'; }, 1500);
+        doCopy();
       });
     };
 
@@ -591,13 +596,13 @@ class TirAssistApp {
 
   // ─── FILTERS ────────────────────────────────────────────────
   applyFilters() {
-    const hasFilter = this.activeFilters.size > 0 || this.activeType || this.filterPaid !== null;
+    const hasFilter = this.activeFilters.size > 0 || this.activeTypes.size > 0 || this.filterPaid !== null;
     if (!hasFilter) {
       this.renderMarkers(this.allParkings);
       return;
     }
     const filtered = this.allParkings.filter(p => {
-      if (this.activeType && p.type !== this.activeType) return false;
+      if (this.activeTypes.size > 0 && !this.activeTypes.has(p.type)) return false;
       if (this.filterPaid !== null && p.paid !== this.filterPaid) return false;
       for (const f of this.activeFilters) {
         if (!p.services.includes(f)) return false;
@@ -907,16 +912,15 @@ class TirAssistApp {
       });
     });
 
-    // Type fchips — single select (toggle off if clicked again)
+    // Type fchips — multi-select
     document.querySelectorAll('.fchip.type-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         const t = chip.dataset.type;
-        if (this.activeType === t) {
-          this.activeType = null;
+        if (this.activeTypes.has(t)) {
+          this.activeTypes.delete(t);
           chip.classList.remove('active');
         } else {
-          this.activeType = t;
-          document.querySelectorAll('.fchip.type-chip').forEach(c => c.classList.remove('active'));
+          this.activeTypes.add(t);
           chip.classList.add('active');
         }
         this.applyFilters();
@@ -942,7 +946,7 @@ class TirAssistApp {
     // Reset all
     document.getElementById('filter-clear').addEventListener('click', () => {
       this.activeFilters.clear();
-      this.activeType  = null;
+      this.activeTypes.clear();
       this.filterPaid  = null;
       document.querySelectorAll('.fchip').forEach(c => c.classList.remove('active'));
       this.renderMarkers(this.allParkings);
