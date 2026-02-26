@@ -557,6 +557,7 @@ class TirAssistApp {
     fromEl.value = this.userPosition ? (this._userLocationLabel || 'Моё местоположение.') : '';
     document.getElementById('route-to').value = '';
     this._syncFromClear();
+    this._syncToClear();
   }
 
   // ─── MATH ───────────────────────────────────────────────────
@@ -790,6 +791,16 @@ class TirAssistApp {
       this._syncFromClear();
       fromEl.focus();
     });
+
+    // Show ✕ when typing in "To" field; clear on ✕ click
+    const toEl      = document.getElementById('route-to');
+    const toClearEl = document.getElementById('route-to-clear');
+    toEl?.addEventListener('input', () => this._syncToClear());
+    toClearEl?.addEventListener('click', () => {
+      toEl.value = '';
+      this._syncToClear();
+      toEl.focus();
+    });
   }
 
   _initLocate() {
@@ -821,6 +832,14 @@ class TirAssistApp {
     const clearBtn = document.getElementById('route-from-clear');
     if (!clearBtn) return;
     clearBtn.classList.toggle('hidden', !fromEl.value);
+  }
+
+  // Show/hide the ✕ clear button for the "To" field
+  _syncToClear() {
+    const toEl = document.getElementById('route-to');
+    const clearBtn = document.getElementById('route-to-clear');
+    if (!clearBtn) return;
+    clearBtn.classList.toggle('hidden', !toEl.value);
   }
 
   _initZoom() {
