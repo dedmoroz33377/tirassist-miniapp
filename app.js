@@ -65,7 +65,7 @@ class TirAssistApp {
     const splashStart = Date.now();
     await this.loadParkings();
     const elapsed = Date.now() - splashStart;
-    const remaining = Math.max(0, 2200 - elapsed);
+    const remaining = Math.max(0, 1300 - elapsed);
     setTimeout(() => {
       document.getElementById('splash-screen')?.classList.add('hide');
     }, remaining);
