@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="style.css?v=20">
+  <link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
 
@@ -33,10 +33,14 @@
     </svg>
   </button>
 
-  <!-- Right Map Controls -->
+  <!-- Right Map Controls — zoom group (top) -->
   <div id="map-controls">
     <button id="zoom-in-btn" class="map-ctrl-btn map-ctrl-zoom" title="Приблизить">+</button>
     <button id="zoom-out-btn" class="map-ctrl-btn map-ctrl-zoom" title="Отдалить">−</button>
+  </div>
+
+  <!-- Right Map Controls — settings/locate group (bottom) -->
+  <div id="map-controls-bottom">
     <button id="filter-btn" class="map-ctrl-btn" title="Настройки фильтров">
       <!-- settings icon -->
       <svg viewBox="0 0 24 24" fill="currentColor">
