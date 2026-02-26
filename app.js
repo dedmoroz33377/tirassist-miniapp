@@ -303,15 +303,14 @@ class TirAssistApp {
         this.userPosition.lat, this.userPosition.lon,
         parking.lat, parking.lon,
       );
-      // Show straight-line first, then update with road distance from OSRM
       const fmtKm = km => km < 1 ? `${Math.round(km * 1000)} м` : `${km.toFixed(1)} км`;
-      distEl.textContent = fmtKm(straightKm);
+      distEl.textContent = '—';
       distEl.classList.remove('hidden');
       this._fetchRoadDistance(this.userPosition, { lat: parking.lat, lon: parking.lon })
         .then(roadKm => {
-          if (roadKm != null) distEl.textContent = fmtKm(roadKm);
+          distEl.textContent = roadKm != null ? fmtKm(roadKm) : fmtKm(straightKm);
         })
-        .catch(() => {});
+        .catch(() => { distEl.textContent = fmtKm(straightKm); });
     } else {
       distEl.classList.add('hidden');
     }
