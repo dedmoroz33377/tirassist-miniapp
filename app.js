@@ -920,8 +920,18 @@ class TirAssistApp {
       });
     });
 
-    // Use my location
-    document.getElementById('add-use-location-btn').addEventListener('click', () => {
+    // Paste from clipboard
+    document.getElementById('add-coords-paste')?.addEventListener('click', async () => {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) document.getElementById('add-coords').value = text.trim();
+      } catch {
+        this.showToast('Нет доступа к буферу обмена');
+      }
+    });
+
+    // Insert my location
+    document.getElementById('add-coords-locate')?.addEventListener('click', () => {
       if (this.userPosition) {
         this._fillCoords(this.userPosition.lat, this.userPosition.lon);
       } else {
