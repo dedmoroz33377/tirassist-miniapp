@@ -60,7 +60,16 @@ class TirAssistApp {
     this.initUI();
     // From-dot starts empty until geolocation resolves
     document.querySelector('.route-dot-from')?.classList.add('empty');
+
+    // Splash: minimum 2.2s, then hide with fade
+    const splashStart = Date.now();
     await this.loadParkings();
+    const elapsed = Date.now() - splashStart;
+    const remaining = Math.max(0, 2200 - elapsed);
+    setTimeout(() => {
+      document.getElementById('splash-screen')?.classList.add('hide');
+    }, remaining);
+
     this.getUserLocation();
   }
 

@@ -26,6 +26,53 @@ html, body {
   font-size: 15px;
 }
 
+/* ─── SPLASH SCREEN ──────────────────────────── */
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0e0e2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#splash-screen.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+#splash-assist {
+  width: 180px;
+  opacity: 0;
+  transform: translateY(-12px);
+  animation: splashAssist 0.6s ease 0.2s forwards;
+}
+
+#splash-logo {
+  width: 220px;
+  opacity: 0;
+  transform: scale(0.85);
+  animation: splashLogo 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+}
+
+@keyframes splashAssist {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes splashLogo {
+  to { opacity: 1; transform: scale(1); }
+}
+
 /* ─── MAP ─────────────────────────────────────── */
 #map {
   position: fixed;
