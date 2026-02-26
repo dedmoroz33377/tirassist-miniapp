@@ -27,6 +27,10 @@ const TILE_LAYERS = {
       subdomains: 'abcd',
       maxZoom: 19,
     },
+    overlay: {
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
+      options: { attribution: '', maxZoom: 19, opacity: 0.7 },
+    },
   },
 };
 
@@ -569,6 +573,11 @@ class TirAssistApp {
     // Add base tile layer
     this.tileLayer = L.tileLayer(cfg.url, cfg.options).addTo(this.map);
     this.tileLayer.bringToBack();
+
+    // Add road labels overlay if defined
+    if (cfg.overlay) {
+      this.overlayLayer = L.tileLayer(cfg.overlay.url, cfg.overlay.options).addTo(this.map);
+    }
 
     const btn = document.getElementById('layer-btn');
     btn.textContent = this.currentLayer === 'dark' ? '🗺' : '🛰️';
