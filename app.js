@@ -13,30 +13,19 @@ const SERVICES = {
 
 const TILE_LAYERS = {
   dark: {
+    url: 'https://mt{s}.google.com/vt/lyrs=y&hl=ru&x={x}&y={y}&z={z}',
+    options: {
+      attribution: '© Google',
+      subdomains: '0123',
+      maxZoom: 20,
+    },
+  },
+  satellite: {
     url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
     options: {
       attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a> © <a href="https://carto.com/">CARTO</a>',
       subdomains: 'abcd',
       maxZoom: 19,
-    },
-    overlay: {
-      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
-      options: { attribution: '', maxZoom: 19, opacity: 0.8 },
-    },
-  },
-  satellite: {
-    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    options: {
-      attribution: '© <a href="https://www.esri.com/">Esri</a>',
-      maxZoom: 19,
-    },
-    overlay: {
-      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
-      options: {
-        attribution: '',
-        maxZoom: 19,
-        opacity: 1,
-      },
     },
   },
 };
@@ -581,14 +570,9 @@ class TirAssistApp {
     this.tileLayer = L.tileLayer(cfg.url, cfg.options).addTo(this.map);
     this.tileLayer.bringToBack();
 
-    // Add road labels overlay for satellite (hybrid mode)
-    if (cfg.overlay) {
-      this.overlayLayer = L.tileLayer(cfg.overlay.url, cfg.overlay.options).addTo(this.map);
-    }
-
     const btn = document.getElementById('layer-btn');
-    btn.textContent = this.currentLayer === 'dark' ? '🛰️' : '🗺';
-    btn.title       = this.currentLayer === 'dark' ? 'Спутник' : 'Карта';
+    btn.textContent = this.currentLayer === 'dark' ? '🗺' : '🛰️';
+    btn.title       = this.currentLayer === 'dark' ? 'Тёмная карта' : 'Спутник Google';
   }
 
   // ─── UI WIRING ──────────────────────────────────────────────
@@ -771,7 +755,11 @@ class TirAssistApp {
   }
 
   _initLayerToggle() {
-    document.getElementById('layer-btn').addEventListener('click', () => {
+    // Set initial button label (dark = Google Hybrid by default)
+    const btn = document.getElementById('layer-btn');
+    btn.textContent = '🗺';
+    btn.title       = 'Тёмная карта';
+    btn.addEventListener('click', () => {
       this.toggleLayer();
     });
   }
