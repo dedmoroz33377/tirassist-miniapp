@@ -1,10 +1,15 @@
 'use strict';
 
+// Public API base URL (set this to your server's HTTPS address)
+const API_BASE_URL = 'https://tirassist-api.example.com';  // TODO: replace with actual URL
+
+const ADMIN_TG_ID = 642423348;
+
 const SERVICES = {
-  shower:     { icon: '🚿', label: 'Душ' },
-  toilet:     { icon: '🚽', label: 'Туалет' },
-  restaurant: { icon: '☕', label: 'Кафе' },
-  laundry:    { icon: '<img src="laundry.png" width="14" style="vertical-align:middle">', label: 'Прачечная' },
+  shower:     { icon: '<img src="icon_shower.png" width="14" style="vertical-align:middle">', label: 'Душ' },
+  toilet:     { icon: '<img src="icon_wc.png" width="14" style="vertical-align:middle">', label: 'Туалет' },
+  restaurant: { icon: '<img src="icon_cafe.png" width="14" style="vertical-align:middle">', label: 'Кафе' },
+  laundry:    { icon: '<img src="icon_laundry.png" width="14" style="vertical-align:middle">', label: 'Прачечная' },
   lighting:   { icon: '💡', label: 'Освещение' },
   fencing:    { icon: '🚧', label: 'Ограждение' },
   dkv:        { icon: '<img src="dkv.png" width="16" style="vertical-align:middle">', label: 'DKV' },
@@ -179,6 +184,7 @@ class TirAssistApp {
           paid:        p.paid === 'true',
           rating:      p.rating ? parseFloat(p.rating) : null,
           source:      p.source      || 'db',
+          db_id:       p.db_id ? parseInt(p.db_id, 10) : null,
           lat,
           lon,
         });
@@ -259,8 +265,20 @@ class TirAssistApp {
 
   // ─── BOTTOM SHEET ───────────────────────────────────────────
   showPanel(parking) {
+    this._currentParking = parking;
+
     // Name
     document.getElementById('parking-name').textContent = parking.name;
+
+    // Admin delete button (only for user-submitted parkings with db_id)
+    const deleteBtn = document.getElementById('parking-delete-btn');
+    const isAdmin = window.Telegram?.WebApp?.initDataUnsafe?.user?.id === ADMIN_TG_ID;
+    if (isAdmin && parking.db_id) {
+      deleteBtn.classList.remove('hidden');
+      deleteBtn.onclick = () => this._adminDeleteParking(parking);
+    } else {
+      deleteBtn.classList.add('hidden');
+    }
 
     // Distance badge
     const distEl = document.getElementById('parking-distance');
@@ -288,7 +306,6 @@ class TirAssistApp {
         btn.textContent = '✅';
         setTimeout(() => { btn.textContent = '📋'; }, 1500);
       }).catch(() => {
-        // Fallback for environments without clipboard API
         const ta = document.createElement('textarea');
         ta.value = coordsText;
         document.body.appendChild(ta);
@@ -301,16 +318,7 @@ class TirAssistApp {
       });
     };
 
-    // Rating
-    const ratingEl = document.getElementById('parking-rating');
-    if (parking.rating) {
-      ratingEl.textContent = `⭐ ${parking.rating}`;
-      ratingEl.style.display = '';
-    } else {
-      ratingEl.style.display = 'none';
-    }
-
-    // Description (длинное — свёрнуто, по кнопке «Развернуть»/«Свернуть»)
+    // Description
     const descRow = document.getElementById('parking-description-row');
     const descWrap = document.getElementById('parking-description-wrap');
     const descEl = document.getElementById('parking-description');
@@ -356,10 +364,164 @@ class TirAssistApp {
       window.open(url, '_blank');
     };
 
+    // Load reviews
+    this._loadReviews(parking);
+
     // Animate in
     const sheet = document.getElementById('bottom-sheet');
     sheet.classList.remove('hidden');
     requestAnimationFrame(() => sheet.classList.add('visible'));
+  }
+
+  _parkingKey(parking) {
+    return `${parking.lat.toFixed(6)},${parking.lon.toFixed(6)}`;
+  }
+
+  async _loadReviews(parking) {
+    const key = this._parkingKey(parking);
+    const summaryEl = document.getElementById('parking-rating-summary');
+    const starsEl = document.getElementById('parking-rating-stars');
+    const countEl = document.getElementById('parking-rating-count');
+    const listEl = document.getElementById('reviews-list');
+
+    listEl.innerHTML = '<div style="color:#6b6b8a;font-size:13px;padding:6px 0">Загрузка отзывов…</div>';
+    summaryEl.classList.add('hidden');
+
+    try {
+      const resp = await fetch(`${API_BASE_URL}/v1/reviews?parking_key=${encodeURIComponent(key)}`);
+      if (!resp.ok) throw new Error('api');
+      const data = await resp.json();
+
+      // Summary
+      if (data.count > 0) {
+        starsEl.textContent = this._starsText(data.avg_rating);
+        countEl.textContent = `${data.avg_rating} · ${data.count} отзыв${this._reviewWord(data.count)}`;
+        summaryEl.classList.remove('hidden');
+      } else {
+        summaryEl.classList.add('hidden');
+      }
+
+      // List
+      const isAdmin = window.Telegram?.WebApp?.initDataUnsafe?.user?.id === ADMIN_TG_ID;
+      if (data.items.length === 0) {
+        listEl.innerHTML = '<div style="color:#6b6b8a;font-size:13px;padding:4px 0 8px">Отзывов пока нет. Будьте первым!</div>';
+      } else {
+        listEl.innerHTML = data.items.map(r => `
+          <div class="review-item" data-review-id="${r.id}">
+            <div class="review-item-header">
+              <span class="review-item-stars">${this._starsText(r.rating)}</span>
+              <div style="display:flex;align-items:center;gap:6px">
+                <span class="review-item-meta">${r.user_name || 'Аноним'} · ${this._formatDate(r.created_at)}</span>
+                ${isAdmin ? `<button class="review-item-delete" title="Удалить отзыв" onclick="app._adminDeleteReview(${r.id})">
+                  <img src="icon_delete.png" width="16" alt="del">
+                </button>` : ''}
+              </div>
+            </div>
+            ${r.comment ? `<div class="review-item-text">${this._escHtml(r.comment)}</div>` : ''}
+          </div>`).join('');
+      }
+    } catch {
+      listEl.innerHTML = '';
+      summaryEl.classList.add('hidden');
+    }
+  }
+
+  _starsText(rating) {
+    const full = Math.round(rating);
+    return '★'.repeat(full) + '☆'.repeat(5 - full);
+  }
+  _reviewWord(n) {
+    if (n % 10 === 1 && n % 100 !== 11) return '';
+    if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return 'а';
+    return 'ов';
+  }
+  _formatDate(iso) {
+    const d = new Date(iso);
+    return `${d.getDate().toString().padStart(2,'0')}.${(d.getMonth()+1).toString().padStart(2,'0')}.${d.getFullYear()}`;
+  }
+  _escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  async _adminDeleteParking(parking) {
+    if (!confirm(`Удалить парковку «${parking.name}»?`)) return;
+    const tgId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+    try {
+      const resp = await fetch(`${API_BASE_URL}/v1/parkings/${parking.db_id}?admin_tg_user_id=${tgId}`, { method: 'DELETE' });
+      if (!resp.ok) throw new Error('api');
+      this.hidePanel();
+      this._showToast('Метка удалена. Карта обновится через ~1 мин.');
+      // Remove marker from map
+      const marker = this.markerMap.get(parking.id);
+      if (marker) { this.clusterGroup.removeLayer(marker); this.markerMap.delete(parking.id); }
+    } catch {
+      this._showToast('Ошибка при удалении', 'error');
+    }
+  }
+
+  async _adminDeleteReview(reviewId) {
+    if (!confirm('Удалить этот отзыв?')) return;
+    const tgId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+    try {
+      const resp = await fetch(`${API_BASE_URL}/v1/reviews/${reviewId}?admin_tg_user_id=${tgId}`, { method: 'DELETE' });
+      if (!resp.ok) throw new Error('api');
+      // Reload reviews
+      if (this._currentParking) this._loadReviews(this._currentParking);
+    } catch {
+      this._showToast('Ошибка при удалении отзыва', 'error');
+    }
+  }
+
+  _initReviews() {
+    let selectedStar = 0;
+    const stars = document.querySelectorAll('.star-input');
+    stars.forEach(s => {
+      s.addEventListener('click', () => {
+        selectedStar = parseInt(s.dataset.star);
+        stars.forEach(st => st.classList.toggle('selected', parseInt(st.dataset.star) <= selectedStar));
+      });
+      s.addEventListener('mouseenter', () => {
+        const hov = parseInt(s.dataset.star);
+        stars.forEach(st => st.classList.toggle('selected', parseInt(st.dataset.star) <= hov));
+      });
+    });
+    document.getElementById('review-stars-input').addEventListener('mouseleave', () => {
+      stars.forEach(st => st.classList.toggle('selected', parseInt(st.dataset.star) <= selectedStar));
+    });
+
+    document.getElementById('review-submit-btn').addEventListener('click', async () => {
+      if (!selectedStar) { this._showToast('Выберите оценку'); return; }
+      const parking = this._currentParking;
+      if (!parking) return;
+      const comment = document.getElementById('review-comment').value.trim();
+      const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+      const btn = document.getElementById('review-submit-btn');
+      btn.disabled = true;
+      try {
+        const resp = await fetch(`${API_BASE_URL}/v1/reviews`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            parking_key: this._parkingKey(parking),
+            user_tg_id: tgUser?.id || 0,
+            user_name: tgUser ? (tgUser.first_name || tgUser.username) : 'Аноним',
+            rating: selectedStar,
+            comment: comment || null,
+            parking_id: parking.db_id || null,
+          }),
+        });
+        if (!resp.ok) throw new Error('api');
+        selectedStar = 0;
+        stars.forEach(st => st.classList.remove('selected'));
+        document.getElementById('review-comment').value = '';
+        this._loadReviews(parking);
+        this._showToast('Отзыв отправлен!');
+      } catch {
+        this._showToast('Ошибка отправки отзыва', 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    });
   }
 
   hidePanel() {
@@ -622,9 +784,14 @@ class TirAssistApp {
     this._initZoom();
     this._initLayerToggle();
     this._initAddParking();
+    this._initReviews();
   }
 
   // ─── TOAST NOTIFICATION ─────────────────────────────────────
+  _showToast(message, type = 'info', duration = 3000) {
+    this.showToast(message, duration);
+  }
+
   showToast(message, duration = 4000) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
@@ -702,8 +869,8 @@ class TirAssistApp {
       }
     });
 
-    // Service chips (amenities + security) — multi-select
-    document.querySelectorAll('.chip:not(.type-chip)').forEach(chip => {
+    // Service fchips (amenities + security) — multi-select
+    document.querySelectorAll('.fchip:not(.type-chip):not(.pay-btn)').forEach(chip => {
       chip.addEventListener('click', () => {
         const f = chip.dataset.filter;
         if (this.activeFilters.has(f)) {
@@ -717,8 +884,8 @@ class TirAssistApp {
       });
     });
 
-    // Type chips — single select (toggle off if clicked again)
-    document.querySelectorAll('.type-chip').forEach(chip => {
+    // Type fchips — single select (toggle off if clicked again)
+    document.querySelectorAll('.fchip.type-chip').forEach(chip => {
       chip.addEventListener('click', () => {
         const t = chip.dataset.type;
         if (this.activeType === t) {
@@ -726,24 +893,23 @@ class TirAssistApp {
           chip.classList.remove('active');
         } else {
           this.activeType = t;
-          document.querySelectorAll('.type-chip').forEach(c => c.classList.remove('active'));
+          document.querySelectorAll('.fchip.type-chip').forEach(c => c.classList.remove('active'));
           chip.classList.add('active');
         }
         this.applyFilters();
       });
     });
 
-    // Payment buttons (Бесплатно / Платно)
-    document.querySelectorAll('.pay-btn').forEach(btn => {
+    // Payment fchips (Бесплатно / Платно)
+    document.querySelectorAll('.fchip.pay-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const val = btn.dataset.paid === 'true';
         if (this.filterPaid === val) {
-          // toggle off
           this.filterPaid = null;
           btn.classList.remove('active');
         } else {
           this.filterPaid = val;
-          document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.fchip.pay-btn').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
         }
         this.applyFilters();
@@ -755,7 +921,7 @@ class TirAssistApp {
       this.activeFilters.clear();
       this.activeType  = null;
       this.filterPaid  = null;
-      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.fchip').forEach(c => c.classList.remove('active'));
       this.renderMarkers(this.allParkings);
     });
   }

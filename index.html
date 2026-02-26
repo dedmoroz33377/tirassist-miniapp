@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="style.css?v=24">
+  <link rel="stylesheet" href="style.css?v=25">
 </head>
 <body>
 
@@ -99,21 +99,19 @@
 
       <!-- Тип парковки -->
       <div class="filter-section">
-        <div class="filter-section-title">Тип парковки</div>
-        <div class="filter-chips">
-          <button class="chip type-chip" data-type="parking">
-            <img src="parking_free.png" width="16" style="vertical-align:middle;margin-right:3px"> Parking
+        <div class="filter-section-title">Тип</div>
+        <div class="filter-chip-row">
+          <button class="fchip type-chip" data-type="parking">
+            <img src="parking_free.png" width="18" alt=""> Parking
           </button>
-          <button class="chip type-chip" data-type="spot">
-            <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;margin-right:3px">
-              <rect x="1" y="1" width="22" height="22" rx="4" fill="white" stroke="#aaa" stroke-width="1.5"/>
-              <text x="12" y="13.5" font-family="Arial,sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="#333">P</text>
-              <text x="12" y="19.5" font-family="Arial,sans-serif" font-size="4.5" font-weight="bold" text-anchor="middle" fill="#333">SPOT</text>
-            </svg>Spot
+          <button class="fchip type-chip" data-type="spot">
+            <img src="spot.png" width="18" alt=""> Spot
           </button>
-          <button class="chip type-chip" data-type="prom">🏭 Prom</button>
-          <button class="chip type-chip" data-type="магазин">
-            <img src="shop.png" width="16" style="vertical-align:middle;margin-right:3px"> Магазин
+          <button class="fchip type-chip" data-type="prom">
+            <img src="prom.png" width="18" alt=""> Prom
+          </button>
+          <button class="fchip type-chip" data-type="магазин">
+            <img src="shop.png" width="18" alt=""> Магазин
           </button>
         </div>
       </div>
@@ -121,46 +119,35 @@
       <!-- Удобства -->
       <div class="filter-section">
         <div class="filter-section-title">Удобства</div>
-        <div class="filter-chips">
-          <button class="chip" data-filter="toilet">🚽 Туалет</button>
-          <button class="chip" data-filter="shower">🚿 Душ</button>
-          <button class="chip" data-filter="restaurant">☕ Кафе</button>
-          <button class="chip" data-filter="laundry"><img src="laundry.png" width="16" style="vertical-align:middle;margin-right:3px"> Прачечная</button>
-        </div>
-      </div>
-
-      <!-- Безопасность -->
-      <div class="filter-section">
-        <div class="filter-section-title">Безопасность</div>
-        <div class="filter-chips">
-          <button class="chip" data-filter="lighting">💡 Освещение</button>
-          <button class="chip" data-filter="fencing">🚧 Ограждение</button>
+        <div class="filter-chip-row">
+          <button class="fchip" data-filter="shower"><img src="icon_shower.png" width="16" alt=""> Душ</button>
+          <button class="fchip" data-filter="toilet"><img src="icon_wc.png" width="16" alt=""> Туалет</button>
+          <button class="fchip" data-filter="restaurant"><img src="icon_cafe.png" width="16" alt=""> Кафе</button>
+          <button class="fchip" data-filter="laundry"><img src="icon_laundry.png" width="16" alt=""> Прачечная</button>
+          <button class="fchip" data-filter="lighting">💡 Освещение</button>
+          <button class="fchip" data-filter="fencing">🚧 Ограждение</button>
         </div>
       </div>
 
       <!-- Карты оплаты -->
       <div class="filter-section">
         <div class="filter-section-title">Карты оплаты</div>
-        <div class="filter-chips">
-          <button class="chip" data-filter="dkv">
-            <img src="dkv.png" width="20" style="vertical-align:middle;margin-right:3px"> DKV
-          </button>
-          <button class="chip" data-filter="snap">
-            <img src="snap.png" width="20" style="vertical-align:middle;margin-right:3px"> Snap
-          </button>
+        <div class="filter-chip-row">
+          <button class="fchip" data-filter="dkv"><img src="dkv.png" width="20" alt=""> DKV</button>
+          <button class="fchip" data-filter="snap"><img src="snap.png" width="20" alt=""> Snap</button>
         </div>
       </div>
 
       <!-- Оплата -->
       <div class="filter-section">
         <div class="filter-section-title">Оплата</div>
-        <div class="filter-chips">
-          <button class="chip pay-btn" data-paid="false">Бесплатно</button>
-          <button class="chip pay-btn" data-paid="true">Платно</button>
+        <div class="filter-chip-row">
+          <button class="fchip pay-btn" data-paid="false">Бесплатно</button>
+          <button class="fchip pay-btn" data-paid="true">Платно</button>
         </div>
       </div>
 
-      <button id="filter-clear" class="secondary-btn">Сбросить всё</button>
+      <button id="filter-clear" class="filter-clear-btn-panel">Сбросить всё</button>
     </div>
 
     <div id="pane-dims" class="hidden">
@@ -313,17 +300,31 @@
       <div id="sheet-handle"></div>
     </div>
     <div id="sheet-content">
+
+      <!-- Header: name + admin delete + distance -->
       <div id="sheet-header">
         <h2 id="parking-name"></h2>
-        <span id="parking-distance" class="distance-badge hidden"></span>
+        <div id="sheet-header-right">
+          <span id="parking-distance" class="distance-badge hidden"></span>
+          <button id="parking-delete-btn" class="sheet-admin-btn hidden" title="Удалить метку">
+            <img src="icon_delete.png" width="22" height="22" alt="delete">
+          </button>
+        </div>
       </div>
+
+      <!-- Coordinates -->
       <div id="parking-coords-row" class="hidden">
         <span id="parking-coords"></span>
         <button id="parking-coords-copy" class="copy-btn" title="Скопировать координаты">📋</button>
       </div>
-      <div id="parking-meta">
-        <span id="parking-rating"></span>
+
+      <!-- Rating summary -->
+      <div id="parking-rating-summary" class="hidden">
+        <span id="parking-rating-stars"></span>
+        <span id="parking-rating-count"></span>
       </div>
+
+      <!-- Description -->
       <div id="parking-description-row" class="sheet-row hidden">
         <span class="sheet-label">Описание</span>
         <div id="parking-description-wrap">
@@ -331,10 +332,38 @@
           <button type="button" id="parking-description-toggle" class="description-toggle hidden">Развернуть</button>
         </div>
       </div>
+
+      <!-- Services tags -->
       <div id="services-row"></div>
-      <button id="maps-btn" class="primary-btn maps-btn">
-        🗺️ Открыть в Google Maps
+
+      <!-- Google Maps button -->
+      <button id="maps-btn" class="sheet-maps-btn">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        Открыть в Google Maps
       </button>
+
+      <!-- Divider before reviews -->
+      <div class="sheet-divider"></div>
+
+      <!-- Reviews section -->
+      <div id="reviews-section">
+        <div id="reviews-list"></div>
+
+        <!-- Leave a review -->
+        <div id="review-form">
+          <div class="review-form-title">Оставить оценку</div>
+          <div id="review-stars-input">
+            <span class="star-input" data-star="1">★</span>
+            <span class="star-input" data-star="2">★</span>
+            <span class="star-input" data-star="3">★</span>
+            <span class="star-input" data-star="4">★</span>
+            <span class="star-input" data-star="5">★</span>
+          </div>
+          <textarea id="review-comment" placeholder="Комментарий (необязательно)" rows="2"></textarea>
+          <button id="review-submit-btn" class="review-submit-btn">Отправить отзыв</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -353,6 +382,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
-  <script src="app.js?v=24"></script>
+  <script src="app.js?v=25"></script>
 </body>
 </html>
