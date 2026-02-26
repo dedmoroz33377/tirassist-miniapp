@@ -8,35 +8,38 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="style.css?v=17">
+  <link rel="stylesheet" href="style.css?v=18">
 </head>
 <body>
 
   <div id="map"></div>
 
+  <!-- Layer toggle — top-right standalone -->
+  <button id="layer-btn" class="map-ctrl-btn map-layer-btn" title="Слои карты">
+    <!-- satellite_alt icon (default: спутник режим) -->
+    <svg id="layer-icon-satellite" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 17l4.5-6 3.5 4.51 2.5-3.01L21 17H7z"/>
+    </svg>
+    <!-- map icon (схема режим) -->
+    <svg id="layer-icon-map" viewBox="0 0 24 24" fill="currentColor" class="hidden">
+      <path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/>
+    </svg>
+  </button>
+
   <!-- Right Map Controls -->
   <div id="map-controls">
-    <button id="layer-btn" class="map-ctrl-btn" title="Слои карты">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-        <polyline points="2 17 12 22 22 17"/>
-        <polyline points="2 12 12 17 22 12"/>
-      </svg>
-    </button>
     <button id="zoom-in-btn" class="map-ctrl-btn map-ctrl-zoom" title="Приблизить">+</button>
     <button id="zoom-out-btn" class="map-ctrl-btn map-ctrl-zoom" title="Отдалить">−</button>
-    <button id="filter-btn" class="map-ctrl-btn" title="Фильтры">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="4" y1="6" x2="20" y2="6"/>
-        <line x1="8" y1="12" x2="16" y2="12"/>
-        <line x1="11" y1="18" x2="13" y2="18"/>
+    <button id="filter-btn" class="map-ctrl-btn" title="Настройки фильтров">
+      <!-- settings icon -->
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41L9.25 5.35C8.66 5.59 8.12 5.92 7.63 6.29L5.24 5.33c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.3-.07.63-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
       </svg>
     </button>
     <button id="locate-btn" class="map-ctrl-btn" title="Моё местоположение">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="3"/>
-        <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
-        <circle cx="12" cy="12" r="8" stroke-opacity="0.3"/>
+      <!-- near_me icon -->
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/>
       </svg>
     </button>
   </div>
@@ -44,12 +47,18 @@
   <!-- Bottom Route Bar -->
   <div id="bottom-route-bar">
     <div class="route-row" id="route-row-from">
-      <span class="route-dot route-dot-from"></span>
-      <input type="text" id="route-from" placeholder="Мое местоположение." autocomplete="off">
-      <button id="locate-in-route-btn" class="route-icon-btn" title="Использовать геолокацию">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+      <!-- near_me icon as from-indicator (orange) -->
+      <span class="route-from-icon">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/>
+        </svg>
+      </span>
+      <input type="text" id="route-from" placeholder="Откуда" autocomplete="off">
+      <button id="route-from-clear" class="route-icon-btn hidden" title="Очистить">✕</button>
+      <button id="locate-in-route-btn" class="route-icon-btn" title="Вставить моё местоположение">
+        <!-- near_me icon -->
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/>
         </svg>
       </button>
     </div>
@@ -265,6 +274,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
-  <script src="app.js?v=17"></script>
+  <script src="app.js?v=18"></script>
 </body>
 </html>

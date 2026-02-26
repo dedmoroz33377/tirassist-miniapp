@@ -33,12 +33,19 @@ html, body {
   z-index: 0;
 }
 
+/* ─── LAYER TOGGLE — standalone top-right ─────── */
+.map-layer-btn {
+  position: fixed;
+  top: 14px;
+  right: 10px;
+  z-index: 1001;
+}
+
 /* ─── RIGHT MAP CONTROLS ──────────────────────── */
 #map-controls {
   position: fixed;
   right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 72px;
   z-index: 1000;
   display: flex;
   flex-direction: column;
@@ -121,20 +128,25 @@ html, body {
   flex-shrink: 0;
 }
 
-.route-dot-from {
-  background: #4CAF50;
-  box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
-}
-
-.route-dot-from.empty {
-  background: transparent;
-  border: 2px solid #888;
-  box-shadow: none;
-}
-
 .route-dot-to {
   background: transparent;
   border: 2px solid #8888aa;
+}
+
+/* near_me icon used as "from" indicator */
+.route-from-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FF8C00;
+}
+
+.route-from-icon svg {
+  width: 20px;
+  height: 20px;
 }
 
 .route-row input {
@@ -559,7 +571,7 @@ html, body {
   color: var(--tg-theme-text-color, var(--text));
 }
 
-0#parking-description-row {
+#parking-description-row {
   margin-bottom: 14px;
 }
 

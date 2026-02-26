@@ -387,9 +387,8 @@ class TirAssistApp {
         if (!fromInput.value || fromInput.value === this._userLocationLabel) {
           this._userLocationLabel = 'Моё местоположение.';
           fromInput.value = this._userLocationLabel;
+          this._syncFromClear();
         }
-        // Fill dot — remove empty state
-        document.querySelector('.route-dot-from')?.classList.remove('empty');
       },
       (err) => console.warn('Geolocation denied:', err),
       { enableHighAccuracy: true, timeout: 10000 },
@@ -539,9 +538,10 @@ class TirAssistApp {
     this.routeActive = false;
     this.renderMarkers(this.allParkings);
     document.getElementById('route-clear-btn').classList.add('hidden');
-    document.getElementById('route-from').value =
-      this.userPosition ? (this._userLocationLabel || '📍 Моё местоположение') : '';
+    const fromEl = document.getElementById('route-from');
+    fromEl.value = this.userPosition ? (this._userLocationLabel || 'Моё местоположение.') : '';
     document.getElementById('route-to').value = '';
+    this._syncFromClear();
   }
 
   // ─── MATH ───────────────────────────────────────────────────
@@ -588,8 +588,13 @@ class TirAssistApp {
     }
 
     const btn = document.getElementById('layer-btn');
-    btn.title = this.currentLayer === 'dark' ? 'Тёмная карта' : 'Спутник Google';
-    btn.classList.toggle('active', this.currentLayer === 'satellite');
+    // dark = currently showing hybrid satellite → icon shows "map" (switch to scheme)
+    // satellite = currently showing dark → icon shows "satellite_alt" (switch to hybrid)
+    const isSatellite = this.currentLayer === 'dark'; // dark is the Google Hybrid
+    document.getElementById('layer-icon-satellite')?.classList.toggle('hidden', !isSatellite);
+    document.getElementById('layer-icon-map')?.classList.toggle('hidden', isSatellite);
+    btn.title = isSatellite ? 'Переключить на схему' : 'Переключить на спутник';
+    btn.classList.toggle('active', !isSatellite);
   }
 
   // ─── UI WIRING ──────────────────────────────────────────────
@@ -760,18 +765,47 @@ class TirAssistApp {
     document.getElementById('route-clear-btn').addEventListener('click', () => {
       this.clearRoute();
     });
+
+    // Show ✕ when typing in "From" field; clear on ✕ click
+    const fromEl  = document.getElementById('route-from');
+    const clearEl = document.getElementById('route-from-clear');
+    fromEl?.addEventListener('input', () => this._syncFromClear());
+    clearEl?.addEventListener('click', () => {
+      fromEl.value = '';
+      this._syncFromClear();
+      fromEl.focus();
+    });
   }
 
   _initLocate() {
-    const doLocate = () => {
+    // Main locate button — flies to user position
+    document.getElementById('locate-btn').addEventListener('click', () => {
       if (this.userPosition) {
         this.map.setView([this.userPosition.lat, this.userPosition.lon], 14);
       } else {
         this.getUserLocation();
       }
-    };
-    document.getElementById('locate-btn').addEventListener('click', doLocate);
-    document.getElementById('locate-in-route-btn')?.addEventListener('click', doLocate);
+    });
+
+    // locate-in-route-btn — fills "From" field with current position
+    document.getElementById('locate-in-route-btn')?.addEventListener('click', () => {
+      if (this.userPosition) {
+        this._userLocationLabel = 'Моё местоположение.';
+        const fromEl = document.getElementById('route-from');
+        fromEl.value = this._userLocationLabel;
+        this._syncFromClear();
+      } else {
+        this.getUserLocation();
+      }
+    });
+  }
+
+  // Show/hide the ✕ clear button for the "From" field
+  _syncFromClear() {
+    const fromEl = document.getElementById('route-from');
+    const clearBtn = document.getElementById('route-from-clear');
+    if (!clearBtn) return;
+    clearBtn.classList.toggle('hidden', !fromEl.value);
   }
 
   _initZoom() {
@@ -780,6 +814,10 @@ class TirAssistApp {
   }
 
   _initLayerToggle() {
+    // Set initial icon state: starts on 'dark' (Google Hybrid) → show satellite_alt icon
+    document.getElementById('layer-icon-satellite')?.classList.remove('hidden');
+    document.getElementById('layer-icon-map')?.classList.add('hidden');
+    document.getElementById('layer-btn').title = 'Переключить на схему';
     document.getElementById('layer-btn').addEventListener('click', () => {
       this.toggleLayer();
     });
