@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
-  <link rel="stylesheet" href="style.css?v=22">
+  <link rel="stylesheet" href="style.css?v=23">
 </head>
 <body>
 
@@ -237,30 +237,42 @@
         <!-- Удобства -->
         <div class="form-group">
           <label>Удобства *</label>
-          <div class="services-grid">
-            <label class="service-check"><input type="checkbox" value="shower">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 12c0-1.66 1.34-3 3-3 .35 0 .68.07 1 .18V4H5v16h7.18C10.07 19.32 9 17.79 9 16v-4zm11-5h-2V5c0-2.21-1.79-4-4-4-1.59 0-2.97.93-3.63 2.27C10.93 3.1 11.46 3 12 3c1.86 0 3.44 1.28 3.87 3H20c.55 0 1 .45 1 1v1c0 .55-.45 1-1 1h-8v5c0 1.1.9 2 2 2s2-.9 2-2v-3h2v3c0 2.21-1.79 4-4 4-1.59 0-2.97-.93-3.63-2.27.21.17.41.35.63.49V20H5V2H3v20h18V9c0-.55-.45-1-1-1z"/></svg>
-              Душ
+          <div class="amenity-grid">
+            <label class="amenity-chip"><input type="checkbox" value="shower">
+              <span class="amenity-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12c0-1.66 1.34-3 3-3 .35 0 .68.07 1 .18V4H5v16h7.18C10.07 19.32 9 17.79 9 16v-4zm11-5h-2V5c0-2.21-1.79-4-4-4-1.59 0-2.97.93-3.63 2.27C10.93 3.1 11.46 3 12 3c1.86 0 3.44 1.28 3.87 3H20c.55 0 1 .45 1 1v1c0 .55-.45 1-1 1h-8v5c0 1.1.9 2 2 2s2-.9 2-2v-3h2v3c0 2.21-1.79 4-4 4-1.59 0-2.97-.93-3.63-2.27.21.17.41.35.63.49V20H5V2H3v20h18V9c0-.55-.45-1-1-1z"/></svg>
+              </span>
+              <span class="amenity-label">Душ</span>
             </label>
-            <label class="service-check"><input type="checkbox" value="toilet">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm0 4c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-5 8l2-2.5h6l2 2.5H7z"/></svg>
-              Туалет
+            <label class="amenity-chip"><input type="checkbox" value="toilet">
+              <span class="amenity-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>
+              </span>
+              <span class="amenity-label">Туалет</span>
             </label>
-            <label class="service-check"><input type="checkbox" value="restaurant">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/></svg>
-              Кафе
+            <label class="amenity-chip"><input type="checkbox" value="restaurant">
+              <span class="amenity-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>
+              </span>
+              <span class="amenity-label">Кафе</span>
             </label>
-            <label class="service-check"><input type="checkbox" value="laundry">
-              <img src="laundry.png" width="18" height="18" style="object-fit:contain" alt="">
-              Прачечная
+            <label class="amenity-chip"><input type="checkbox" value="laundry">
+              <span class="amenity-icon">
+                <img src="laundry.png" width="26" height="26" style="object-fit:contain" alt="">
+              </span>
+              <span class="amenity-label">Прачечная</span>
             </label>
-            <label class="service-check"><input type="checkbox" value="lighting">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
-              Освещение
+            <label class="amenity-chip"><input type="checkbox" value="lighting">
+              <span class="amenity-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+              </span>
+              <span class="amenity-label">Освещение</span>
             </label>
-            <label class="service-check"><input type="checkbox" value="fencing">
-              <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M22 12v2h-2v-2h-2v2h-2v-2h-2v2h-2v-2H8v2H6v-2H4v2H2v-2H0v-2h2V8H0V6h2V4h2v2h2V4h2v2h2V4h2v2h2V4h2v2h2V4h2v2h2V6h-2v2h2v2h-2v2h2zM4 8v2h2V8H4zm4 0v2h2V8H8zm4 0v2h2V8h-2zm4 0v2h2V8h-2z"/></svg>
-              Ограждение
+            <label class="amenity-chip"><input type="checkbox" value="fencing">
+              <span class="amenity-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12v2h-2v-2h-2v2h-2v-2h-2v2h-2v-2H8v2H6v-2H4v2H2v-2H0v-2h2V8H0V6h2V4h2v2h2V4h2v2h2V4h2v2h2V4h2v2h2V4h2v2h2V6h-2v2h2v2h-2v2h2zM4 8v2h2V8H4zm4 0v2h2V8H8zm4 0v2h2V8h-2zm4 0v2h2V8h-2z"/></svg>
+              </span>
+              <span class="amenity-label">Ограждение</span>
             </label>
           </div>
         </div>
@@ -341,6 +353,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <script src="https://unpkg.com/@tmcw/togeojson@5.8.1/dist/togeojson.umd.js"></script>
-  <script src="app.js?v=22"></script>
+  <script src="app.js?v=23"></script>
 </body>
 </html>

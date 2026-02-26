@@ -859,8 +859,6 @@ class TirAssistApp {
 
   // ─── ADD PARKING FORM ───────────────────────────────────────
   openAddModal() {
-    const center = this.map.getCenter();
-    document.getElementById('add-coords').value = `${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}`;
     document.getElementById('add-modal').classList.remove('hidden');
   }
 
@@ -876,7 +874,7 @@ class TirAssistApp {
   _resetAddForm() {
     document.getElementById('add-name').value = '';
     document.getElementById('add-coords').value = '';
-    document.querySelectorAll('.service-check').forEach(el => {
+    document.querySelectorAll('.service-check, .amenity-chip').forEach(el => {
       el.classList.remove('checked');
       el.querySelector('input').checked = false;
     });
@@ -911,8 +909,8 @@ class TirAssistApp {
       });
     });
 
-    // Service chip toggle
-    document.querySelectorAll('.service-check').forEach(label => {
+    // Service/amenity chip toggle (supports both .service-check and .amenity-chip)
+    document.querySelectorAll('.service-check, .amenity-chip').forEach(label => {
       label.addEventListener('click', () => {
         const cb = label.querySelector('input');
         cb.checked = !cb.checked;
@@ -962,7 +960,7 @@ class TirAssistApp {
       return;
     }
 
-    const services = Array.from(document.querySelectorAll('.service-check input:checked'))
+    const services = Array.from(document.querySelectorAll('.service-check input:checked, .amenity-chip input:checked'))
       .map(cb => cb.value)
       .join(',');
 
