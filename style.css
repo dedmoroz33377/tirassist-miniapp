@@ -302,6 +302,13 @@ html, body {
   height: 16px;
 }
 
+.route-locate-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  display: block;
+}
+
 .route-icon-btn:active {
   background: rgba(255, 255, 255, 0.13);
 }

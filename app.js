@@ -637,7 +637,7 @@ class TirAssistApp {
 
         // Auto-fill "From" field with sentinel (only if user hasn't typed anything)
         const fromInput = document.getElementById('route-from');
-        if (!fromInput.value || fromInput.value === this._userLocationLabel) {
+        if (!fromInput.value || this._isMyLocationValue(fromInput.value)) {
           this._userLocationLabel = 'Моё местоположение.';
           fromInput.value = this._userLocationLabel;
           this._syncFromClear();
@@ -680,7 +680,7 @@ class TirAssistApp {
     try {
 
     // Resolve "from"
-    if (fromQ === this._userLocationLabel && this.userPosition) {
+    if (this._isMyLocationValue(fromQ) && this.userPosition) {
       from = { lat: this.userPosition.lat, lon: this.userPosition.lon };
     } else {
       try {
@@ -1063,6 +1063,8 @@ class TirAssistApp {
       this._syncToClear();
       toEl.focus();
     });
+
+    this._syncFromClear();
   }
 
   _initLocate() {
@@ -1092,8 +1094,21 @@ class TirAssistApp {
   _syncFromClear() {
     const fromEl = document.getElementById('route-from');
     const clearBtn = document.getElementById('route-from-clear');
-    if (!clearBtn) return;
+    const locateBtn = document.getElementById('locate-in-route-btn');
+    if (!clearBtn || !locateBtn) return;
+
+    const isMyLocation = this._isMyLocationValue(fromEl.value);
     clearBtn.classList.toggle('hidden', !fromEl.value);
+    locateBtn.classList.toggle('hidden', isMyLocation);
+  }
+
+  _isMyLocationValue(value) {
+    const normalized = (value || '').trim().toLowerCase();
+    if (!normalized) return false;
+    const label = (this._userLocationLabel || 'Моё местоположение').trim().toLowerCase();
+    const labelNoDot = label.endsWith('.') ? label.slice(0, -1) : label;
+    const normalizedNoDot = normalized.endsWith('.') ? normalized.slice(0, -1) : normalized;
+    return normalized === label || normalizedNoDot === labelNoDot;
   }
 
   // Show/hide the ✕ clear button for the "To" field
