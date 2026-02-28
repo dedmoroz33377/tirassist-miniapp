@@ -341,6 +341,14 @@ class TirAssistApp {
         L.DomEvent.stopPropagation(e);
         this._setActiveMarker(parking.id);
         this.showPanel(parking);
+        if (this.routeActive && this.nearRouteParkings.length > 0) {
+          const idx = this.nearRouteParkings.findIndex(p => p.id === parking.id);
+          if (idx !== -1) {
+            this.routeParkingIndex = idx;
+            document.getElementById('route-nav-label').textContent =
+              `${idx + 1} из ${this.nearRouteParkings.length}`;
+          }
+        }
       });
 
       this.clusterGroup.addLayer(marker);
