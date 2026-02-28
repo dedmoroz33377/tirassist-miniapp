@@ -900,8 +900,6 @@ class TirAssistApp {
     const p = this.nearRouteParkings[idx];
     if (!p) return;
     this.map.panTo([p.lat, p.lon], { animate: true });
-    this._setActiveMarker(p.id);
-    this.showPanel(p);
   }
 
   // ─── ROAD DISTANCE via OSRM ─────────────────────────────────
