@@ -1119,6 +1119,47 @@ html, body {
   user-select: none;
 }
 
+/* ─── ROUTE PARKING NAVIGATOR ────────────────── */
+#route-parking-nav {
+  position: fixed;
+  bottom: 158px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--tg-theme-bg-color, #1e1e30);
+  border-radius: 24px;
+  padding: 6px 20px;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.45);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--tg-theme-text-color, #e8e8f0);
+  white-space: nowrap;
+  pointer-events: all;
+}
+
+#route-parking-nav.hidden {
+  display: none;
+}
+
+.route-nav-arrow {
+  background: none;
+  border: none;
+  font-size: 28px;
+  line-height: 1;
+  color: var(--tg-theme-button-color, #2196F3);
+  cursor: pointer;
+  padding: 0 2px;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+.route-nav-arrow:active {
+  opacity: 0.6;
+}
+
 /* ─── LEAFLET OVERRIDES ───────────────────────── */
 .leaflet-control-zoom {
   border: none !important;

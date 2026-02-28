@@ -64,6 +64,8 @@ class TirAssistApp {
     this.routeLayer         = null;
     this.routeEndMarker     = null;
     this.routeActive        = false;
+    this.nearRouteParkings  = [];
+    this.routeParkingIndex  = 0;
     this.currentLayer       = 'dark';
     this.tileLayer          = null;
     this.overlayLayer       = null;
@@ -819,9 +821,20 @@ class TirAssistApp {
 
     const highlightIds = new Set(nearRoute.map(p => p.id));
     this.renderMarkers(this.allParkings, highlightIds);
-    if (nearRoute.length === 0) {
+
+    // Sort parkings by their position along the route (start → end) and show navigator
+    this.nearRouteParkings = nearRoute.slice().sort(
+      (a, b) => this._routeOffset(a, routePoints) - this._routeOffset(b, routePoints)
+    );
+    this.routeParkingIndex = 0;
+    if (this.nearRouteParkings.length > 0) {
+      document.getElementById('route-parking-nav').classList.remove('hidden');
+      this._updateRouteNav();
+    } else {
+      document.getElementById('route-parking-nav').classList.add('hidden');
       this.showToast('Рядом с маршрутом парковки не найдены. Показана вся база.');
     }
+
     this.routeActive = true;
     document.getElementById('route-clear-btn').classList.remove('hidden');
 
@@ -840,6 +853,9 @@ class TirAssistApp {
       this.routeEndMarker = null;
     }
     this.routeActive = false;
+    this.nearRouteParkings = [];
+    this.routeParkingIndex = 0;
+    document.getElementById('route-parking-nav').classList.add('hidden');
     this.renderMarkers(this.allParkings);
     document.getElementById('route-clear-btn').classList.add('hidden');
     const fromEl = document.getElementById('route-from');
@@ -847,6 +863,45 @@ class TirAssistApp {
     document.getElementById('route-to').value = '';
     this._syncFromClear();
     this._syncToClear();
+  }
+
+  // Returns the cumulative distance along the route to the nearest projection of a parking.
+  // Used to sort nearRoute parkings by their order along the route (start → end).
+  _routeOffset(parking, routePoints) {
+    let bestDistSq = Infinity;
+    let bestOffset = 0;
+    let cumDist    = 0;
+    for (let i = 0; i < routePoints.length - 1; i++) {
+      const ax = routePoints[i][0],   ay = routePoints[i][1];
+      const bx = routePoints[i+1][0], by = routePoints[i+1][1];
+      const dx = bx - ax, dy = by - ay;
+      const segLenSq = dx * dx + dy * dy;
+      const segLen   = Math.sqrt(segLenSq);
+      let t = 0;
+      if (segLenSq > 0) {
+        t = ((parking.lat - ax) * dx + (parking.lon - ay) * dy) / segLenSq;
+        t = Math.max(0, Math.min(1, t));
+      }
+      const px = ax + t * dx, py = ay + t * dy;
+      const distSq = (parking.lat - px) ** 2 + (parking.lon - py) ** 2;
+      if (distSq < bestDistSq) {
+        bestDistSq = distSq;
+        bestOffset = cumDist + t * segLen;
+      }
+      cumDist += segLen;
+    }
+    return bestOffset;
+  }
+
+  _updateRouteNav() {
+    const total = this.nearRouteParkings.length;
+    const idx   = this.routeParkingIndex;
+    document.getElementById('route-nav-label').textContent = `${idx + 1} из ${total}`;
+    const p = this.nearRouteParkings[idx];
+    if (!p) return;
+    this.map.panTo([p.lat, p.lon], { animate: true });
+    this._setActiveMarker(p.id);
+    this.showPanel(p);
   }
 
   // ─── ROAD DISTANCE via OSRM ─────────────────────────────────
@@ -1087,6 +1142,20 @@ class TirAssistApp {
 
     document.getElementById('route-clear-btn').addEventListener('click', () => {
       this.clearRoute();
+    });
+
+    document.getElementById('route-nav-prev').addEventListener('click', () => {
+      if (this.routeParkingIndex > 0) {
+        this.routeParkingIndex--;
+        this._updateRouteNav();
+      }
+    });
+
+    document.getElementById('route-nav-next').addEventListener('click', () => {
+      if (this.routeParkingIndex < this.nearRouteParkings.length - 1) {
+        this.routeParkingIndex++;
+        this._updateRouteNav();
+      }
     });
 
     // Show ✕ when typing in "From" field; clear on ✕ click
