@@ -39,6 +39,17 @@ const TILE_LAYERS = {
   },
 };
 
+const KML_SOURCES = {
+  db: [
+    './data/parkings.kml?v=2',
+    'https://raw.githubusercontent.com/dedmoroz33377/tirassist-miniapp/main/data/parkings.kml?v=2',
+  ],
+  user: [
+    './data/user_parkings.kml?v=2',
+    'https://raw.githubusercontent.com/dedmoroz33377/tirassist-miniapp/main/data/user_parkings.kml?v=2',
+  ],
+};
+
 class TirAssistApp {
   constructor() {
     this.map                = null;
@@ -51,6 +62,7 @@ class TirAssistApp {
     this.activeTypes        = new Set();   // multi-select for parking types
     this.filterPaid         = null;
     this.routeLayer         = null;
+    this.routeEndMarker     = null;
     this.routeActive        = false;
     this.currentLayer       = 'dark';
     this.tileLayer          = null;
@@ -195,6 +207,7 @@ class TirAssistApp {
   async _parsePlacemarksFromKml(url) {
     try {
       const res  = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const text = await res.text();
       const dom  = new DOMParser().parseFromString(text, 'text/xml');
 
@@ -242,11 +255,19 @@ class TirAssistApp {
     }
   }
 
+  async _loadFirstAvailableKml(urls) {
+    for (const url of urls) {
+      const points = await this._parsePlacemarksFromKml(url);
+      if (points.length > 0) return points;
+    }
+    return [];
+  }
+
   async loadParkings() {
     try {
       const [dbPoints, userPoints] = await Promise.all([
-        this._parsePlacemarksFromKml('./data/parkings.kml?v=2'),
-        this._parsePlacemarksFromKml('./data/user_parkings.kml?v=2'),
+        this._loadFirstAvailableKml(KML_SOURCES.db),
+        this._loadFirstAvailableKml(KML_SOURCES.user),
       ]);
 
       const allPoints = [...dbPoints, ...userPoints];
@@ -758,11 +779,28 @@ class TirAssistApp {
 
     // Draw polyline
     if (this.routeLayer) this.map.removeLayer(this.routeLayer);
+    if (this.routeEndMarker) {
+      this.map.removeLayer(this.routeEndMarker);
+      this.routeEndMarker = null;
+    }
     this.routeLayer = L.polyline(routePoints, {
       color:   '#4fc3f7',
       weight:  5,
       opacity: 0.85,
     }).addTo(this.map);
+
+    // Add a clear destination pin at the route endpoint.
+    const routeEndPoint = routePoints[routePoints.length - 1];
+    this.routeEndMarker = L.marker(routeEndPoint, {
+      icon: L.divIcon({
+        className: '',
+        html: '<div class="route-end-pin">📍</div>',
+        iconSize: [28, 36],
+        iconAnchor: [14, 40],
+      }),
+      zIndexOffset: 1200,
+    }).addTo(this.map);
+
     this.map.fitBounds(this.routeLayer.getBounds(), { padding: [60, 60] });
 
     // Find parkings within 5 km corridor
@@ -780,7 +818,10 @@ class TirAssistApp {
     });
 
     const highlightIds = new Set(nearRoute.map(p => p.id));
-    this.renderMarkers(nearRoute, highlightIds);
+    this.renderMarkers(this.allParkings, highlightIds);
+    if (nearRoute.length === 0) {
+      this.showToast('Рядом с маршрутом парковки не найдены. Показана вся база.');
+    }
     this.routeActive = true;
     document.getElementById('route-clear-btn').classList.remove('hidden');
 
@@ -793,6 +834,10 @@ class TirAssistApp {
     if (this.routeLayer) {
       this.map.removeLayer(this.routeLayer);
       this.routeLayer = null;
+    }
+    if (this.routeEndMarker) {
+      this.map.removeLayer(this.routeEndMarker);
+      this.routeEndMarker = null;
     }
     this.routeActive = false;
     this.renderMarkers(this.allParkings);
